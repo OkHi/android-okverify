@@ -1,0 +1,3 @@
+rootProject.name='OkHi Verification'
+include ':app'
+include ':android-okverify'
