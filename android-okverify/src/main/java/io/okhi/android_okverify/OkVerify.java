@@ -8,7 +8,9 @@ import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
+import io.okhi.android_background_geofencing.BackgroundGeofencing;
 import io.okhi.android_background_geofencing.interfaces.RequestHandler;
+import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingLocationService;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingPermissionService;
@@ -168,5 +170,13 @@ public class OkVerify extends OkHiCore {
                 handler.onError(exception);
             }
         });
+    }
+
+    public static void stop(Context context, String locationId) {
+        BackgroundGeofence.stop(context, locationId);
+    }
+
+    public static void init(Context context) {
+        BackgroundGeofencing.init(context);
     }
 }
