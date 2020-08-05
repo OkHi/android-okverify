@@ -56,7 +56,7 @@ public class OkVerify extends OkHiCore {
         super(builder.auth);
         this.activity = builder.activity;
         this.auth = builder.auth;
-        if (builder.auth.getContext().getMode().equals(OkHiMode.DEV)) {
+        if (builder.auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else if (builder.auth.getContext().getMode().equals(OkHiMode.PROD)) {

@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,7 +13,6 @@ import io.okhi.android_core.models.OkHiAppContext;
 import io.okhi.android_core.models.OkHiAuth;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkHiLocation;
-import io.okhi.android_core.models.OkHiMode;
 import io.okhi.android_core.models.OkHiUser;
 import io.okhi.android_okverify.OkVerify;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
@@ -23,10 +21,10 @@ import io.okhi.android_okverify.interfaces.OkVerifyRequestHandler;
 public class MainActivity extends AppCompatActivity {
 
     // 1. define your app context: OkHiMode.DEV | OkHiMode.SANDBOX | OkHiMode.PROD - dev will be removed in an update
-    private static final OkHiAppContext context = new OkHiAppContext.Builder(OkHiMode.DEV).build();
+    private static final OkHiAppContext context = new OkHiAppContext.Builder(Secret.OKHI_DEV_MODE).build();
 
     // 2. initialise OkHiAuth with your branchId, clientKey and your apps context
-    private static final OkHiAuth auth = new OkHiAuth.Builder("yhCvQnGG1z", "4d380065-71e5-48b8-8fb3-29fe61299c4b")
+    private static final OkHiAuth auth = new OkHiAuth.Builder(Secret.OKHI_BRANCH_ID, Secret.OKHI_CLIENT_KEY)
             .withContext(context)
             .build();
 
@@ -55,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
            // 18. create a okhi location
             OkHiLocation location = new OkHiLocation("myLocationId", -1.313275, 36.842388);
             // 19. create an okhi user
-            OkHiUser user = new OkHiUser.Builder("+254700110590")
+            OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
                     .withFirstName("Julius")
                     .withLastName("Kiano")
                     .build();
