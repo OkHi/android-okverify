@@ -8,6 +8,7 @@ import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_core.models.OkHiAccessScope;
 
 public class Constant {
+    public static String OkHi_DEV_MODE = "dev";
     // library info
     private static String LIBRARY_NAME = "okverifyMobileAndroid";
     private static String LIBRARY_VERSION = "v1.0.0";
