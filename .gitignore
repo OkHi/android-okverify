@@ -19,7 +19,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -39,3 +40,4 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+app/src/main/java/io/okhi/okhiverification/Secret.java
