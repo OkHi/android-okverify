@@ -11,7 +11,7 @@ public class Constant {
     public static String OkHi_DEV_MODE = "dev";
     // library info
     private static String LIBRARY_NAME = "okverifyMobileAndroid";
-    private static String LIBRARY_VERSION = "v1.0.0";
+    private static String LIBRARY_VERSION = "1.0.0";
 
     private static String API_VERSION = "/v5";
     public static String DEV_BASE_URL = "https://dev-api.okhi.io" + API_VERSION;
