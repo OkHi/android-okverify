@@ -51,18 +51,29 @@ public class MainActivity extends AppCompatActivity {
         // 17. if all the checks pass attempt to start okverify
         if (preFlightCheck) {
            // 18. create a okhi location
-            OkHiLocation location = new OkHiLocation("myLocationId", -1.313275, 36.842388);
+            OkHiLocation home = new OkHiLocation("Oy33hrT97w", -1.3148501, 36.8363831);
+            final OkHiLocation work = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
             // 19. create an okhi user
-            OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
+            final OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
                     .withFirstName("Julius")
                     .withLastName("Kiano")
                     .build();
 
             // 20. start verification
-            okVerify.start(user, location, new OkVerifyCallback<String>() {
+            okVerify.start(user, home, new OkVerifyCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
+                    okVerify.start(user, work, new OkVerifyCallback<String>() {
+                        @Override
+                        public void onSuccess(String result) {
+                            showMessage("Successfully started verification for: " + result);
+                        }
+                        @Override
+                        public void onError(OkHiException e) {
+                            showMessage("Something went wrong: " + e.getCode());
+                        }
+                    });
                 }
                 @Override
                 public void onError(OkHiException e) {
