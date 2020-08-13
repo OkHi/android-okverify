@@ -158,7 +158,9 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-    /* Starts the address verification process */
+    /**
+     * Starts the address verification process
+     */
     private void start(Context context, OkVerifyGeofence geofence, OkHiLocation location, final OkVerifyCallback<String> handler) {
         geofence.start(context, location.getId(), location.getLat(), location.getLon(), new OkVerifyAsyncTaskHandler<String>() {
             @Override
