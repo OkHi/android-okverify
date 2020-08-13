@@ -145,7 +145,6 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-
     private void start(final Context context, final String authorizationToken, final OkHiLocation location, final OkVerifyCallback<String> handler) {
         OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(), TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
             @Override
@@ -159,6 +158,7 @@ public class OkVerify extends OkHiCore {
         });
     }
 
+    /* Starts the address verification process */
     private void start(Context context, OkVerifyGeofence geofence, OkHiLocation location, final OkVerifyCallback<String> handler) {
         geofence.start(context, location.getId(), location.getLat(), location.getLon(), new OkVerifyAsyncTaskHandler<String>() {
             @Override
