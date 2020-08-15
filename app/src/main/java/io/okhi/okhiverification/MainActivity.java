@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
                 }
+
                 @Override
                 public void onError(OkHiException e) {
                     showMessage("Something went wrong: " + e.getCode());
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         public void onSuccess() {
             startAddressVerification();
         }
+
         @Override
         public void onError(OkHiException exception) {
             showMessage(exception.getMessage());
