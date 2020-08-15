@@ -32,7 +32,8 @@ public class OkVerifyGeofence {
     private int transitionTypes = Constant.DEFAULT_TRANSITION_TYPES;
     private boolean registerOnDeviceRestart = Constant.DEFAULT_GEOFENCE_REGISTER_ON_DEVICE_RESTART;
 
-    private OkVerifyGeofence() {}
+    private OkVerifyGeofence() {
+    }
 
     private OkVerifyGeofence(Context context, ResponseBody responseBody, String transitUrl, String authorizationToken) {
         try {
@@ -90,6 +91,7 @@ public class OkVerifyGeofence {
             public void onSuccess(ResponseBody responseBody) {
                 handler.onSuccess(new OkVerifyGeofence(context, responseBody, transitUrl, authorizationToken));
             }
+
             @Override
             public void onError(OkHiException exception) {
                 handler.onError(exception);
@@ -112,6 +114,7 @@ public class OkVerifyGeofence {
             public void onSuccess() {
                 handler.onSuccess(id);
             }
+
             @Override
             public void onError(BackgroundGeofencingException exception) {
                 handler.onError(new OkHiException(exception.getCode(), Objects.requireNonNull(exception.getMessage())));
@@ -126,6 +129,7 @@ public class OkVerifyGeofence {
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, OkHiException.NETWORK_ERROR_MESSAGE));
             }
+
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) {
                 if (response.isSuccessful()) {

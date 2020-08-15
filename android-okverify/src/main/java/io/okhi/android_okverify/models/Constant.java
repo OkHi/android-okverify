@@ -46,5 +46,7 @@ public class Constant {
         } finally {
             return meta;
         }
-    };
+    }
+
+    ;
 }
