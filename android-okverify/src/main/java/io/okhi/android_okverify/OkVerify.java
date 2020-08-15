@@ -29,16 +29,16 @@ import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
 
 public class OkVerify extends OkHiCore {
-    private Activity activity;
-    private OkHiAuth auth;
+    private final Activity activity;
+    private final OkHiAuth auth;
     private BackgroundGeofencingPermissionService permissionService;
     private BackgroundGeofencingPlayService playService;
     private BackgroundGeofencingLocationService locationService;
-    private String TRANSIT_URL;
-    private String TRANSIT_CONFIG_URL;
+    private final String TRANSIT_URL;
+    private final String TRANSIT_CONFIG_URL;
 
     private static class BackgroundGeofenceRequestHandler implements RequestHandler {
-        private OkVerifyRequestHandler requestHandler;
+        private final OkVerifyRequestHandler requestHandler;
 
         private BackgroundGeofenceRequestHandler(@NonNull OkVerifyRequestHandler requestHandler) {
             this.requestHandler = requestHandler;
@@ -72,8 +72,8 @@ public class OkVerify extends OkHiCore {
     }
 
     public static class Builder {
-        private OkHiAuth auth;
-        private Activity activity;
+        private final OkHiAuth auth;
+        private final Activity activity;
 
         public Builder(@NonNull OkHiAuth auth, Activity activity) {
             this.auth = auth;
@@ -122,13 +122,13 @@ public class OkVerify extends OkHiCore {
         }
     }
 
-    public void onRequestPermissionsResult(@NonNull int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (permissionService != null) {
             permissionService.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
-    public void onActivityResult(@NonNull int requestCode, @NonNull int resultCode, @NonNull Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (playService != null) {
             playService.onActivityResult(requestCode, resultCode, data);
         }

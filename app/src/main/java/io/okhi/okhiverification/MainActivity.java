@@ -21,7 +21,7 @@ import io.okhi.android_okverify.interfaces.OkVerifyRequestHandler;
 public class MainActivity extends AppCompatActivity {
 
     // Define an OkHiLocation that'll be used for verification
-    OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
+    final OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
 
     // Define your app context: OkHiMode.DEV | OkHiMode.SANDBOX | OkHiMode.PROD - dev will be removed in an update
     private static final OkHiAppContext context = new OkHiAppContext.Builder(Secret.OKHI_DEV_MODE).build();

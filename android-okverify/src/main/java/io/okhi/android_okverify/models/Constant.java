@@ -8,18 +8,15 @@ import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_core.models.OkHiAccessScope;
 
 public class Constant {
-    public static String OkHi_DEV_MODE = "dev";
-    // library info
-    private static String LIBRARY_NAME = "okverifyMobileAndroid";
-    private static String LIBRARY_VERSION = "1.0.0";
+    public static final String OkHi_DEV_MODE = "dev";
 
-    private static String API_VERSION = "/v5";
-    public static String DEV_BASE_URL = "https://dev-api.okhi.io" + API_VERSION;
-    public static String SANDBOX_BASE_URL = "https://sandbox-api.okhi.io" + API_VERSION;
-    public static String PROD_BASE_URL = "https://api.okhi.io" + API_VERSION;
-    public static String TRANSIT_ENDPOINT = "/users/transits";
-    public static String TRANSIT_CONFIG_ENDPOINT = "/verify/config";
-    public static String[] OKVERIFY_SCOPES = {OkHiAccessScope.VERIFY};
+    private static final String API_VERSION = "/v5";
+    public static final String DEV_BASE_URL = "https://dev-api.okhi.io" + API_VERSION;
+    public static final String SANDBOX_BASE_URL = "https://sandbox-api.okhi.io" + API_VERSION;
+    public static final String PROD_BASE_URL = "https://api.okhi.io" + API_VERSION;
+    public static final String TRANSIT_ENDPOINT = "/users/transits";
+    public static final String TRANSIT_CONFIG_ENDPOINT = "/verify/config";
+    public static final String[] OKVERIFY_SCOPES = {OkHiAccessScope.VERIFY};
     static final long TIME_OUT = 30;
     static final TimeUnit TIME_OUT_UNIT = TimeUnit.SECONDS;
 
@@ -37,16 +34,16 @@ public class Constant {
         JSONObject meta = new JSONObject();
         JSONObject lib = new JSONObject();
         try {
+            // library info
+            String LIBRARY_NAME = "okverifyMobileAndroid";
+            String LIBRARY_VERSION = "1.0.0";
             lib.put("name", LIBRARY_NAME);
             lib.put("version", LIBRARY_VERSION);
             meta.put("lib", lib);
             return meta;
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            return meta;
         }
+        return meta;
     }
-
-    ;
 }
