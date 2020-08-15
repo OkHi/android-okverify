@@ -20,15 +20,18 @@ import io.okhi.android_okverify.interfaces.OkVerifyRequestHandler;
 
 public class MainActivity extends AppCompatActivity {
 
-    // 1. define your app context: OkHiMode.DEV | OkHiMode.SANDBOX | OkHiMode.PROD - dev will be removed in an update
+    // Define an OkHiLocation that'll be used for verification
+    final OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
+
+    // Define your app context: OkHiMode.DEV | OkHiMode.SANDBOX | OkHiMode.PROD - dev will be removed in an update
     private static final OkHiAppContext context = new OkHiAppContext.Builder(Secret.OKHI_DEV_MODE).build();
 
-    // 2. initialise OkHiAuth with your branchId, clientKey and your apps context
+    // Initialise OkHiAuth with your branchId, clientKey and your apps context
     private static final OkHiAuth auth = new OkHiAuth.Builder(Secret.OKHI_BRANCH_ID, Secret.OKHI_CLIENT_KEY)
             .withContext(context)
             .build();
 
-    // 3. Create the OkVerify object variable
+    // Create the OkVerify object variable
     private OkVerify okVerify;
 
     @Override
@@ -36,98 +39,69 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 4. initialise the okverify library onCreate, to enable requesting of permissions and services
+        // Initialise the okverify library onCreate, to enable requesting of permissions and services
         okVerify = new OkVerify.Builder(auth, this).build();
 
-        // 7. should be invoked one time on app start
+        // Should be invoked one time on app start
         OkVerify.init(getApplicationContext());
     }
 
 
-    // 8. define a method you'll use to start okverify
-    public void startOkVerify() {
-        boolean preFlightCheck = preFlightCheck();
+    // Define a method you'll use to start okverify
+    private void startAddressVerification() {
+        boolean canStartAddressVerification = canStartAddressVerification();
 
-        // 17. if all the checks pass attempt to start okverify
-        if (preFlightCheck) {
-           // 18. create a okhi location
-            OkHiLocation home = new OkHiLocation("Oy33hrT97w", -1.3148501, 36.8363831);
-            final OkHiLocation work = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
-            // 19. create an okhi user
-            final OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
+        // If all the checks pass attempt to start okverify
+        if (canStartAddressVerification) {
+            // Create an okhi user
+            OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
                     .withFirstName("Julius")
                     .withLastName("Kiano")
                     .build();
 
-            // 20. start verification
-            okVerify.start(user, home, new OkVerifyCallback<String>() {
+            // Start verification
+            okVerify.start(user, workAddress, new OkVerifyCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
-                    okVerify.start(user, work, new OkVerifyCallback<String>() {
-                        @Override
-                        public void onSuccess(String result) {
-                            showMessage("Successfully started verification for: " + result);
-                        }
-                        @Override
-                        public void onError(OkHiException e) {
-                            showMessage("Something went wrong: " + e.getCode());
-                        }
-                    });
                 }
+
                 @Override
                 public void onError(OkHiException e) {
                     showMessage("Something went wrong: " + e.getCode());
                 }
             });
-
-            // 21. to stop
-            // OkVerify.stop(getApplicationContext(), location.getId());
         }
     }
 
-    // 9. define a method you'll use to check if conditions are met to start okverify - this method will be added in the lib on the next update
-    private boolean preFlightCheck() {
-        // 10. check and request user to enable location services
+    private void stopAddressVerification() {
+        OkVerify.stop(getApplicationContext(), workAddress.getId());
+    }
+
+    class Handler implements OkVerifyRequestHandler {
+        @Override
+        public void onSuccess() {
+            startAddressVerification();
+        }
+
+        @Override
+        public void onError(OkHiException exception) {
+            showMessage(exception.getMessage());
+        }
+    }
+
+    // Define a method you'll use to check if conditions are met to start okverify - this method will be added in the lib on the next update
+    private boolean canStartAddressVerification() {
+        Handler requestHandler = new Handler();
+        // Check and request user to enable location services
         if (!OkVerify.isLocationServicesEnabled(getApplicationContext())) {
-            okVerify.requestEnableLocationServices(new OkVerifyRequestHandler() {
-                @Override
-                public void onSuccess() {
-                    // 11. user has enabled location services
-                    startOkVerify();
-                }
-                @Override
-                public void onError(OkHiException exception) {
-                    // 12. location services aren't enabled - handle error
-                    showMessage("Location services are required to start verification");
-                }
-            });
+            okVerify.requestEnableLocationServices(requestHandler);
         } else if (!OkVerify.isGooglePlayServicesAvailable(getApplicationContext())) {
-            // 13. check and request user to enable google play services
-            okVerify.requestEnableGooglePlayServices(new OkVerifyRequestHandler() {
-                @Override
-                public void onSuccess() {
-                    // 14. user has enabled google play services
-                    startOkVerify();
-                }
-                @Override
-                public void onError(OkHiException exception) {
-                    // 15. location services aren't enabled - handle error
-                    showMessage("Google play services are required to start verification");
-                }
-            });
+            // Check and request user to enable google play services
+            okVerify.requestEnableGooglePlayServices(requestHandler);
         } else if (!OkVerify.isLocationPermissionGranted(getApplicationContext())) {
-            // 16. check and request user to grant location permission
-            okVerify.requestLocationPermission("Hey we need location permissions", "Pretty please..", new OkVerifyRequestHandler() {
-                @Override
-                public void onSuccess() {
-                    startOkVerify();
-                }
-                @Override
-                public void onError(OkHiException exception) {
-                    showMessage("Location permissions are required to start verification");
-                }
-            });
+            // Check and request user to grant location permission
+            okVerify.requestLocationPermission("Hey we need location permissions", "Pretty please..", requestHandler);
         } else {
             return true;
         }
@@ -142,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        // 5. pass permission results to okverify
+        // Pass permission results to okverify
         okVerify.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
@@ -150,11 +124,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // 6. pass activity results results to okverify
+        // Pass activity results results to okverify
         okVerify.onActivityResult(requestCode, resultCode, data);
     }
 
     public void handleButtonTap(View view) {
-        startOkVerify();
+        startAddressVerification();
     }
 }
