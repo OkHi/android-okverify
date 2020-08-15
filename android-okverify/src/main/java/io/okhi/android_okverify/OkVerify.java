@@ -39,13 +39,16 @@ public class OkVerify extends OkHiCore {
 
     private static class BackgroundGeofenceRequestHandler implements RequestHandler {
         private OkVerifyRequestHandler requestHandler;
+
         private BackgroundGeofenceRequestHandler(@NonNull OkVerifyRequestHandler requestHandler) {
             this.requestHandler = requestHandler;
         }
+
         @Override
         public void onSuccess() {
             requestHandler.onSuccess();
         }
+
         @Override
         public void onError(BackgroundGeofencingException exception) {
             requestHandler.onError(new OkHiException(exception.getCode(), Objects.requireNonNull(exception.getMessage())));
@@ -71,10 +74,12 @@ public class OkVerify extends OkHiCore {
     public static class Builder {
         private OkHiAuth auth;
         private Activity activity;
+
         public Builder(@NonNull OkHiAuth auth, Activity activity) {
             this.auth = auth;
             this.activity = activity;
         }
+
         public OkVerify build() {
             return new OkVerify(this);
         }
@@ -117,7 +122,7 @@ public class OkVerify extends OkHiCore {
         }
     }
 
-    public void onRequestPermissionsResult(@NonNull int requestCode, @NonNull String [] permissions, @NonNull int [] grantResults) {
+    public void onRequestPermissionsResult(@NonNull int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (permissionService != null) {
             permissionService.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -138,6 +143,7 @@ public class OkVerify extends OkHiCore {
             public void onSuccess(String authorizationToken) {
                 start(activity.getApplicationContext(), authorizationToken, location, handler);
             }
+
             @Override
             public void onError(OkHiException exception) {
                 handler.onError(exception);
@@ -151,6 +157,7 @@ public class OkVerify extends OkHiCore {
             public void onSuccess(OkVerifyGeofence geofence) {
                 start(context, geofence, location, handler);
             }
+
             @Override
             public void onError(OkHiException exception) {
                 handler.onError(exception);
@@ -158,15 +165,13 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-    /**
-     * Starts the address verification process
-     */
     private void start(Context context, OkVerifyGeofence geofence, OkHiLocation location, final OkVerifyCallback<String> handler) {
         geofence.start(context, location.getId(), location.getLat(), location.getLon(), new OkVerifyAsyncTaskHandler<String>() {
             @Override
             public void onSuccess(String result) {
                 handler.onSuccess(result);
             }
+
             @Override
             public void onError(OkHiException exception) {
                 handler.onError(exception);
