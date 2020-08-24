@@ -37,8 +37,7 @@ public class OkVerifyGeofence {
 
     private OkVerifyGeofence(Context context, ResponseBody responseBody, String transitUrl, String authorizationToken) {
         try {
-            String body = responseBody.string();
-            JSONObject configuration = new JSONObject(body);
+            JSONObject configuration = responseBody != null ? new JSONObject(responseBody.string()) : new JSONObject();
             radius = configuration.has("radius") ? configuration.getInt("radius") : Constant.DEFAULT_GEOFENCE_RADIUS;
             expiration = configuration.has("expiration") ? configuration.getInt("expiration") : Constant.DEFAULT_GEOFENCE_EXPIRATION;
             notificationResponsiveness = configuration.has("notification_responsiveness") ? configuration.getInt("notification_responsiveness") : Constant.DEFAULT_GEOFENCE_NOTIFICATION_RESPONSIVENESS;
@@ -94,7 +93,7 @@ public class OkVerifyGeofence {
 
             @Override
             public void onError(OkHiException exception) {
-                handler.onError(exception);
+                handler.onSuccess(new OkVerifyGeofence(context, null, transitUrl, authorizationToken));
             }
         });
     }
