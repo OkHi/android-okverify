@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +18,7 @@ import io.okhi.android_core.models.OkHiUser;
 import io.okhi.android_okverify.OkVerify;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.interfaces.OkVerifyRequestHandler;
+import io.okhi.android_okverify.models.OkHiNotification;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,8 +44,17 @@ public class MainActivity extends AppCompatActivity {
         // Initialise the okverify library onCreate, to enable requesting of permissions and services
         okVerify = new OkVerify.Builder(auth, this).build();
 
-        // Should be invoked one time on app start
-        OkVerify.init(getApplicationContext());
+        // Should be invoked one time on app start.
+        // (optional) OkHiNotification, use to start a foreground service to transmit verification signals to OkHi servers
+        OkVerify.init(getApplicationContext(), new OkHiNotification(
+                "Verifying your address",
+                "We're currently verifying your address. This won't take long",
+                "OkHi",
+                "OkHi Address Verification",
+                "Alerts related to any address verification updates",
+                NotificationManager.IMPORTANCE_DEFAULT,
+                R.mipmap.ic_launcher
+        ));
     }
 
 
