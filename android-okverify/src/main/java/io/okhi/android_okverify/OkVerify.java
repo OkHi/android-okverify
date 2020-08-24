@@ -13,6 +13,7 @@ import io.okhi.android_background_geofencing.interfaces.RequestHandler;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingLocationService;
+import io.okhi.android_background_geofencing.models.BackgroundGeofencingNotification;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingPermissionService;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingPlayService;
 import io.okhi.android_core.OkHiCore;
@@ -26,6 +27,7 @@ import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.interfaces.OkVerifyRequestHandler;
 import io.okhi.android_okverify.models.Constant;
+import io.okhi.android_okverify.models.OkHiNotification;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
 
 public class OkVerify extends OkHiCore {
@@ -185,5 +187,9 @@ public class OkVerify extends OkHiCore {
 
     public static void init(Context context) {
         BackgroundGeofencing.init(context);
+    }
+
+    public static void init(Context context, OkHiNotification notification) {
+        BackgroundGeofencing.init(context, notification);
     }
 }
