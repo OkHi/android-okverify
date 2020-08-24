@@ -190,6 +190,14 @@ public class OkVerify extends OkHiCore {
     }
 
     public static void init(Context context, OkHiNotification notification) {
-        BackgroundGeofencing.init(context, notification);
+        BackgroundGeofencing.init(context, new BackgroundGeofencingNotification(
+                notification.getTitle(),
+                notification.getText(),
+                notification.getChannelId(),
+                notification.getChannelName(),
+                notification.getChannelDescription(),
+                notification.getChannelImportance(),
+                notification.getIcon()
+        ));
     }
 }
