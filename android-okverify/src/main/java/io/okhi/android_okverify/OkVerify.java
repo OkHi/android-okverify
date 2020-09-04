@@ -58,6 +58,10 @@ public class OkVerify extends OkHiCore {
     }
 
     public void start(OkHiUser user, final OkHiLocation location, final OkVerifyCallback<String> handler) {
+        if (location.getId() == null) {
+            handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, "Address failed to be created successfully. Missing location id"));
+            return;
+        }
         anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES, new OkHiRequestHandler<String>() {
             @Override
             public void onResult(String authorizationToken) {
