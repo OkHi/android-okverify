@@ -93,7 +93,7 @@ public class OkVerifyGeofence {
 
             @Override
             public void onError(OkHiException exception) {
-                handler.onSuccess(new OkVerifyGeofence(context, null, transitUrl, authorizationToken));
+                handler.onError(exception);
             }
         });
     }
