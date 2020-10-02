@@ -118,9 +118,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (!OkHi.isGooglePlayServicesAvailable(getApplicationContext())) {
             // Check and request user to enable google play services
             okhi.requestEnableGooglePlayServices(requestHandler);
-        } else if (!OkHi.isLocationPermissionGranted(getApplicationContext())) {
+        } else if (!OkHi.isBackgroundLocationPermissionGranted(getApplicationContext())) {
             // Check and request user to grant location permission
-            okhi.requestLocationPermission("Hey we need location permissions", "Pretty please..", requestHandler);
+            okhi.requestBackgroundLocationPermission("Hey we need  background location permissions", "Pretty please..", requestHandler);
         } else {
             return true;
         }
