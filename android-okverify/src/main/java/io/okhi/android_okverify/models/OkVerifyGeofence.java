@@ -1,11 +1,12 @@
 package io.okhi.android_okverify.models;
 
 import android.content.Context;
+import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -17,11 +18,14 @@ import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.CipherSuite;
+import okhttp3.ConnectionSpec;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okhttp3.TlsVersion;
 
 public class OkVerifyGeofence {
     private float radius = Constant.DEFAULT_GEOFENCE_RADIUS;
@@ -125,12 +129,12 @@ public class OkVerifyGeofence {
         Request request = new Request.Builder().url(configurationUrl).headers(headers).build();
         getHttpClient().newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            public void onFailure(Call call, IOException e) {
                 handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, OkHiException.NETWORK_ERROR_MESSAGE));
             }
 
             @Override
-            public void onResponse(@NotNull Call call, @NotNull Response response) {
+            public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     handler.onSuccess(response.body());
                 } else {
@@ -142,7 +146,25 @@ public class OkVerifyGeofence {
     }
 
     private static OkHttpClient getHttpClient() {
+        ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                .supportsTlsExtensions(true)
+                .tlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_1, TlsVersion.TLS_1_0)
+                .cipherSuites(
+                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
+                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
+                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
+                        CipherSuite.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
+                        CipherSuite.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA,
+                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA)
+                .build();
         return new OkHttpClient.Builder()
+                .connectionSpecs(Collections.singletonList(spec))
                 .connectTimeout(Constant.TIME_OUT, Constant.TIME_OUT_UNIT)
                 .writeTimeout(Constant.TIME_OUT, Constant.TIME_OUT_UNIT)
                 .readTimeout(Constant.TIME_OUT, Constant.TIME_OUT_UNIT)
