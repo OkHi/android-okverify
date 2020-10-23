@@ -6,7 +6,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.1.4"
@@ -37,7 +37,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'com.github.okhi:android-core:qa-20-10-SNAPSHOT'
-    implementation 'com.github.okhi:android-background-geofencing:qa-20-10-SNAPSHOT'
-    implementation 'com.squareup.okhttp3:okhttp:4.8.0'
+    implementation 'com.github.okhi:android-core:df6feb02f037b4c1c063893d421923d193378aa0'
+    implementation 'com.github.okhi:android-background-geofencing:033593e5080f75f37a9820c0f2cc9b8c8bf3d566'
+    implementation ("com.squareup.okhttp3:okhttp:3.12.12"){
+        force = true //API 19 support
+    }
 }
