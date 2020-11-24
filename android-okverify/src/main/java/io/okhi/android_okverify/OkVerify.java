@@ -108,7 +108,7 @@ public class OkVerify extends OkHiCore {
     }
 
     public static void init(Context context) {
-        BackgroundGeofencing.init(context);
+        BackgroundGeofencing.init(context, null);
     }
 
     public static void init(Context context, OkHiNotification notification) {
@@ -119,7 +119,9 @@ public class OkVerify extends OkHiCore {
                 notification.getChannelName(),
                 notification.getChannelDescription(),
                 notification.getChannelImportance(),
-                notification.getIcon()
+                notification.getIcon(),
+                notification.getNotificationId(),
+                notification.getNotificationRequestCode()
         ));
     }
 }
