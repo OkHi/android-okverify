@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 "OkHi Address Verification",
                 "Alerts related to any address verification updates",
                 importance,
-                R.mipmap.ic_launcher
+                R.mipmap.ic_launcher,
+                1, // notificationId
+                2 // notification request code
         ));
     }
 
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
+                    startForegroundVerification();
                 }
 
                 @Override
@@ -94,7 +97,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void stopAddressVerification() {
+    private void startForegroundVerification() {
+        try {
+            OkVerify.startForegroundService(getApplicationContext());
+        } catch (OkHiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stopAddressVerification(View view) {
         OkVerify.stop(getApplicationContext(), workAddress.getId());
     }
 
