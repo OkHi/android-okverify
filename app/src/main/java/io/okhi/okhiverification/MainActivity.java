@@ -97,18 +97,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startForegroundVerification() {
-        try {
-            OkVerify.startForegroundService(getApplicationContext());
-        } catch (OkHiException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void stopAddressVerification(View view) {
-        OkVerify.stop(getApplicationContext(), workAddress.getId());
-    }
-
     class Handler implements OkHiRequestHandler<Boolean> {
         @Override
         public void onResult(Boolean result) {
@@ -160,5 +148,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleButtonTap(View view) {
         startAddressVerification();
+    }
+
+    public void stopAddressVerification(View view) {
+        OkVerify.stop(getApplicationContext(), workAddress.getId());
+    }
+
+    private void startForegroundVerification() {
+        try {
+            // start a foreground service that'll improve the stability and reliability of verification signals
+            OkVerify.startForegroundService(getApplicationContext());
+        } catch (OkHiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopForegroundVerification() {
+        // stops the running foreground service
+        OkVerify.stopForegroundService(getApplicationContext());
+    }
+
+    private boolean checkForegroundService() {
+        // checks if the foreground service is running
+        return OkVerify.isForegroundServiceRunning(getApplicationContext());
     }
 }
