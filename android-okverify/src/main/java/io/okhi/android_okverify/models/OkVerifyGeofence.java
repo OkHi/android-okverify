@@ -141,6 +141,7 @@ public class OkVerifyGeofence {
                     // TODO: create static method that handle response codes in core library
                     handler.onError(new OkHiException(OkHiException.UNKNOWN_ERROR_CODE, OkHiException.UNKNOWN_ERROR_MESSAGE));
                 }
+                response.close();
             }
         });
     }
