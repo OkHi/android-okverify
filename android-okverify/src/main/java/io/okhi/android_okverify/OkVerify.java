@@ -140,7 +140,7 @@ public class OkVerify extends OkHiCore {
         BackgroundGeofencing.stopForegroundService(context);
     }
 
-    public static void isForegroundServiceRunning(Context context) {
-        BackgroundGeofencing.isForegroundServiceRunning(context);
+    public static boolean isForegroundServiceRunning(Context context) {
+        return BackgroundGeofencing.isForegroundServiceRunning(context);
     }
 }
