@@ -5,8 +5,11 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.util.Objects;
+
 import io.okhi.android_background_geofencing.BackgroundGeofencing;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
+import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingNotification;
 import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
@@ -108,7 +111,7 @@ public class OkVerify extends OkHiCore {
     }
 
     public static void init(Context context) {
-        BackgroundGeofencing.init(context);
+        BackgroundGeofencing.init(context, null);
     }
 
     public static void init(Context context, OkHiNotification notification) {
@@ -119,7 +122,25 @@ public class OkVerify extends OkHiCore {
                 notification.getChannelName(),
                 notification.getChannelDescription(),
                 notification.getChannelImportance(),
-                notification.getIcon()
+                notification.getIcon(),
+                notification.getNotificationId(),
+                notification.getNotificationRequestCode()
         ));
+    }
+
+    public static void startForegroundService(Context context) throws OkHiException {
+        try {
+            BackgroundGeofencing.startForegroundService(context);
+        } catch (BackgroundGeofencingException e) {
+            throw new OkHiException(e.getCode(), Objects.requireNonNull(e.getMessage()));
+        }
+    }
+
+    public static void stopForegroundService(Context context) {
+        BackgroundGeofencing.stopForegroundService(context);
+    }
+
+    public static boolean isForegroundServiceRunning(Context context) {
+        return BackgroundGeofencing.isForegroundServiceRunning(context);
     }
 }

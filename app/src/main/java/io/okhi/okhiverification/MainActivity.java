@@ -62,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 "OkHi Address Verification",
                 "Alerts related to any address verification updates",
                 importance,
-                R.mipmap.ic_launcher
+                R.mipmap.ic_launcher,
+                1, // notificationId
+                2 // notification request code
         ));
     }
 
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
+                    startForegroundVerification();
                 }
 
                 @Override
@@ -92,10 +95,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-    }
-
-    private void stopAddressVerification() {
-        OkVerify.stop(getApplicationContext(), workAddress.getId());
     }
 
     class Handler implements OkHiRequestHandler<Boolean> {
@@ -149,5 +148,28 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleButtonTap(View view) {
         startAddressVerification();
+    }
+
+    public void stopAddressVerification(View view) {
+        OkVerify.stop(getApplicationContext(), workAddress.getId());
+    }
+
+    private void startForegroundVerification() {
+        try {
+            // start a foreground service that'll improve the stability and reliability of verification signals
+            OkVerify.startForegroundService(getApplicationContext());
+        } catch (OkHiException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopForegroundVerification() {
+        // stops the running foreground service
+        OkVerify.stopForegroundService(getApplicationContext());
+    }
+
+    private boolean checkForegroundService() {
+        // checks if the foreground service is running
+        return OkVerify.isForegroundServiceRunning(getApplicationContext());
     }
 }
