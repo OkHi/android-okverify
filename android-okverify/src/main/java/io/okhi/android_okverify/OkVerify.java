@@ -32,7 +32,6 @@ import io.okhi.android_okverify.models.OkVerifyStop;
 public class OkVerify extends OkHiCore {
     private final Activity activity;
     private final OkHiAuth auth;
-    private final String STOP_VERIFICATION_URL;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
 
@@ -41,15 +40,12 @@ public class OkVerify extends OkHiCore {
         this.activity = builder.activity;
         this.auth = builder.auth;
         if (builder.auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
-            STOP_VERIFICATION_URL = Constant.DEV_BASE_URL + Constant.STOP_VERIFICATION_ENDPOINT;
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else if (builder.auth.getContext().getMode().equals(OkHiMode.PROD)) {
-            STOP_VERIFICATION_URL = Constant.PROD_BASE_URL + Constant.STOP_VERIFICATION_ENDPOINT;
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else {
-            STOP_VERIFICATION_URL = Constant.SANDBOX_BASE_URL + Constant.STOP_VERIFICATION_ENDPOINT;
             TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         }
@@ -116,8 +112,8 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-    public void stop(final Context context, final OkHiUser user, final String locationId,
-                            final OkVerifyCallback<String> handler)  {
+    public void stop(@NonNull final Context context, @NonNull final OkHiUser user,
+                     @NonNull final String locationId, @NonNull final OkVerifyCallback<String> handler)  {
 
         anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES,
                 new OkHiRequestHandler<String>() {
