@@ -81,7 +81,6 @@ public class OkVerifyStop extends AsyncTask<Void, Void, String> {
         if ((200 <= responseCode) && (responseCode < 300)) {
             okVerifyAsyncTaskHandler.onSuccess(result);
         } else {
-            displayLog(result);
             okVerifyAsyncTaskHandler.onError(new OkHiException(""+responseCode, result));
         }
     }
