@@ -2,8 +2,12 @@ package io.okhi.android_okverify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -23,10 +27,12 @@ import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkHiNotification;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
+import io.okhi.android_okverify.models.OkVerifyStop;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
     private final OkHiAuth auth;
+    private final String STOP_VERIFICATION_URL;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
 
@@ -35,12 +41,15 @@ public class OkVerify extends OkHiCore {
         this.activity = builder.activity;
         this.auth = builder.auth;
         if (builder.auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
+            STOP_VERIFICATION_URL = Constant.DEV_BASE_URL + Constant.STOP_VERIFICATION_ENDPOINT;
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else if (builder.auth.getContext().getMode().equals(OkHiMode.PROD)) {
+            STOP_VERIFICATION_URL = Constant.PROD_BASE_URL + Constant.STOP_VERIFICATION_ENDPOINT;
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else {
+            STOP_VERIFICATION_URL = Constant.SANDBOX_BASE_URL + Constant.STOP_VERIFICATION_ENDPOINT;
             TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         }
@@ -79,7 +88,8 @@ public class OkVerify extends OkHiCore {
     }
 
     private void start(final Context context, final String authorizationToken, final OkHiLocation location, final OkVerifyCallback<String> handler) {
-        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(), TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
+        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(),
+                TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
             @Override
             public void onSuccess(OkVerifyGeofence geofence) {
                 start(context, geofence, location, handler);
@@ -106,8 +116,45 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-    public static void stop(Context context, String locationId) {
-        BackgroundGeofence.stop(context, locationId);
+    public void stop(final Context context, final OkHiUser user, final String locationId,
+                            final OkVerifyCallback<String> handler)  {
+
+        anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES,
+                new OkHiRequestHandler<String>() {
+            @Override
+            public void onResult(String authorizationToken) {
+                OkVerifyAsyncTaskHandler okVerifyAsyncTaskHandler = new OkVerifyAsyncTaskHandler() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        BackgroundGeofence.stop(context, locationId);
+                        handler.onSuccess((String) result);
+                    }
+
+                    @Override
+                    public void onError(OkHiException exception) {
+                        handler.onError(exception);
+                    }
+                };
+                try {
+                    JSONObject payload = new JSONObject();
+                    payload.put("status", "stop");
+                    payload.put("duration", 90);
+
+                    OkVerifyStop okVerifyStop = new OkVerifyStop(okVerifyAsyncTaskHandler, payload,
+                            auth.getContext().getMode(), locationId, authorizationToken);
+                    okVerifyStop.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+                catch (JSONException jsonException){
+                    handler.onError(new OkHiException("Unknown Error", jsonException.getMessage()));
+                }
+            }
+
+            @Override
+            public void onError(OkHiException exception) {
+                handler.onError(exception);
+            }
+        });
+
     }
 
     public static void init(Context context) {

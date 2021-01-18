@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import io.okhi.android_core.models.OkHiUser;
 import io.okhi.android_okverify.OkVerify;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.OkHiNotification;
+import io.okhi.android_okverify.models.OkVerifyStop;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,10 +33,10 @@ public class MainActivity extends AppCompatActivity {
     final OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
 
     // Define your app context: OkHiMode.SANDBOX | OkHiMode.PROD - dev will be removed in an update
-    private static final OkHiAppContext context = new OkHiAppContext.Builder(Secret.OKHI_DEV_MODE).build();
+    private static final OkHiAppContext context = new OkHiAppContext.Builder(Secret.OKHI_MODE).build();
 
     // Initialise OkHiAuth with your branchId, clientKey and your apps context
-    private static final OkHiAuth auth = new OkHiAuth.Builder(Secret.OKHI_BRANCH_ID, Secret.OKHI_CLIENT_KEY)
+    private static final OkHiAuth auth = new OkHiAuth.Builder(Secret.DEV_CLIENT_BRANCH, Secret.DEV_CLIENT_KEY)
             .withContext(context)
             .build();
 
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         // If all the checks pass attempt to start okverify
         if (canStartAddressVerification) {
             // Create an okhi user
-            OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
+            OkHiUser user = new OkHiUser.Builder(Secret.TEST_PHONE)
                     .withFirstName("Julius")
                     .withLastName("Kiano")
                     .build();
@@ -151,7 +153,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopAddressVerification(View view) {
-        OkVerify.stop(getApplicationContext(), workAddress.getId());
+        OkHiUser user = new OkHiUser.Builder(Secret.TEST_PHONE)
+                .withFirstName("Julius")
+                .withLastName("Kiano")
+                .build();
+        OkVerifyCallback okVerifyCallback = new OkVerifyCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                Log.i("MainActivity", "Stop verification success");
+            }
+
+            @Override
+            public void onError(OkHiException e) {
+                Log.i("MainActivity", "Stop verification error "+e.toString());
+            }
+        };
+        okVerify.stop(getApplicationContext(), user, workAddress.getId(), okVerifyCallback);
     }
 
     private void startForegroundVerification() {
