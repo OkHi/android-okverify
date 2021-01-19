@@ -14,6 +14,7 @@ import io.okhi.android_background_geofencing.interfaces.RequestHandler;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingWebHook;
+import io.okhi.android_core.models.OkHiCoreUtil;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import okhttp3.Call;
@@ -121,6 +122,7 @@ public class OkVerifyGeofence {
             @Override
             public void onError(BackgroundGeofencingException exception) {
                 handler.onError(new OkHiException(exception.getCode(), Objects.requireNonNull(exception.getMessage())));
+                OkHiCoreUtil.captureException(exception);
             }
         });
     }
@@ -130,6 +132,7 @@ public class OkVerifyGeofence {
         getHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                OkHiCoreUtil.captureException(e);
                 handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, OkHiException.NETWORK_ERROR_MESSAGE));
             }
 

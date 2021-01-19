@@ -14,6 +14,7 @@ import io.okhi.android_background_geofencing.models.BackgroundGeofencingNotifica
 import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
 import io.okhi.android_core.models.OkHiAuth;
+import io.okhi.android_core.models.OkHiCoreUtil;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkHiLocation;
 import io.okhi.android_core.models.OkHiMode;
@@ -73,6 +74,7 @@ public class OkVerify extends OkHiCore {
 
             @Override
             public void onError(OkHiException exception) {
+                OkHiCoreUtil.captureException(exception);
                 handler.onError(exception);
             }
         });
@@ -132,6 +134,7 @@ public class OkVerify extends OkHiCore {
         try {
             BackgroundGeofencing.startForegroundService(context);
         } catch (BackgroundGeofencingException e) {
+            OkHiCoreUtil.captureException(e);
             throw new OkHiException(e.getCode(), Objects.requireNonNull(e.getMessage()));
         }
     }
