@@ -133,9 +133,7 @@ public class OkVerify extends OkHiCore {
                 };
                 try {
                     JSONObject payload = new JSONObject();
-                    payload.put("status", "stop");
-                    payload.put("duration", 90);
-
+                    payload.put("state", "stop");
                     OkVerifyStop okVerifyStop = new OkVerifyStop(okVerifyAsyncTaskHandler, payload,
                             auth.getContext().getMode(), locationId, authorizationToken);
                     okVerifyStop.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

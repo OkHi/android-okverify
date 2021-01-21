@@ -14,6 +14,8 @@ public class Constant {
     public static final String DEV_BASE_URL = "https://dev-api.okhi.io" + API_VERSION;
     public static final String SANDBOX_BASE_URL = "https://sandbox-api.okhi.io" + API_VERSION;
     public static final String PROD_BASE_URL = "https://api.okhi.io" + API_VERSION;
+    public static final String STOP_ENDPOINT_LOCATIONS = "/locations/";
+    public static final String STOP_ENDPOINT_VERIFICATIONS = "/verifications";
     public static final String TRANSIT_ENDPOINT = "/users/transits";
     public static final String TRANSIT_CONFIG_ENDPOINT = "/verify/config";
     public static final String[] OKVERIFY_SCOPES = {OkHiAccessScope.VERIFY};
