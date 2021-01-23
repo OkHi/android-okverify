@@ -36,9 +36,9 @@ public class OkVerifyUtil {
                 .build();
     }
 
-    public static Headers getHeaders2(String accessToken) {
+    public static Headers getHeaders(String accessToken, String prefix) {
         Headers.Builder builder = new Headers.Builder();
-        builder.add("Authorization", "Bearer " + accessToken);
+        builder.add("Authorization", prefix == null || prefix.isEmpty() ?  "Bearer " + accessToken : prefix + accessToken);
         return builder.build();
     }
 
