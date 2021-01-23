@@ -2,8 +2,12 @@ package io.okhi.android_okverify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -23,6 +27,7 @@ import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkHiNotification;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
+import io.okhi.android_okverify.models.OkVerifyStop;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
@@ -79,7 +84,8 @@ public class OkVerify extends OkHiCore {
     }
 
     private void start(final Context context, final String authorizationToken, final OkHiLocation location, final OkVerifyCallback<String> handler) {
-        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(), TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
+        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(),
+                TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
             @Override
             public void onSuccess(OkVerifyGeofence geofence) {
                 start(context, geofence, location, handler);
@@ -106,8 +112,43 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-    public static void stop(Context context, String locationId) {
-        BackgroundGeofence.stop(context, locationId);
+    public void stop(@NonNull final Context context, @NonNull final OkHiUser user,
+                     @NonNull final String locationId, @NonNull final OkVerifyCallback<String> handler)  {
+
+        anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES,
+                new OkHiRequestHandler<String>() {
+            @Override
+            public void onResult(String authorizationToken) {
+                OkVerifyAsyncTaskHandler okVerifyAsyncTaskHandler = new OkVerifyAsyncTaskHandler() {
+                    @Override
+                    public void onSuccess(Object result) {
+                        BackgroundGeofence.stop(context, locationId);
+                        handler.onSuccess((String) result);
+                    }
+
+                    @Override
+                    public void onError(OkHiException exception) {
+                        handler.onError(exception);
+                    }
+                };
+                try {
+                    JSONObject payload = new JSONObject();
+                    payload.put("state", "stop");
+                    OkVerifyStop okVerifyStop = new OkVerifyStop(okVerifyAsyncTaskHandler, payload,
+                            auth.getContext().getMode(), locationId, authorizationToken);
+                    okVerifyStop.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+                catch (JSONException jsonException){
+                    handler.onError(new OkHiException("Unknown Error", jsonException.getMessage()));
+                }
+            }
+
+            @Override
+            public void onError(OkHiException exception) {
+                handler.onError(exception);
+            }
+        });
+
     }
 
     public static void init(Context context) {
