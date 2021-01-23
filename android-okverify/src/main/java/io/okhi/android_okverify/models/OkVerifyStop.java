@@ -22,7 +22,7 @@ import static io.okhi.android_okverify.models.Constant.PROD_BASE_URL;
 import static io.okhi.android_okverify.models.Constant.SANDBOX_BASE_URL;
 import static io.okhi.android_okverify.models.Constant.STOP_ENDPOINT_LOCATIONS;
 import static io.okhi.android_okverify.models.Constant.STOP_ENDPOINT_VERIFICATIONS;
-import static io.okhi.android_okverify.models.OkVerifyUtil.getHeaders2;
+import static io.okhi.android_okverify.models.OkVerifyUtil.getHeaders;
 import static io.okhi.android_okverify.models.OkVerifyUtil.getHttpClient;
 
 public class OkVerifyStop extends AsyncTask<Void, Void, String> {
@@ -58,7 +58,7 @@ public class OkVerifyStop extends AsyncTask<Void, Void, String> {
             Request request = new Request.Builder()
                     .url(urlString)
                     .patch(body)
-                    .headers(getHeaders2(token))
+                    .headers(getHeaders(token, "Bearer "))
                     .build();
             Response response = getHttpClient().newCall(request).execute();
             ResponseBody responseBody = response.body();
@@ -78,8 +78,10 @@ public class OkVerifyStop extends AsyncTask<Void, Void, String> {
     protected void onPostExecute(String result) {
         if ((200 <= responseCode) && (responseCode < 300)) {
             okVerifyAsyncTaskHandler.onSuccess(result);
+        } else if (responseCode == 404) {
+            okVerifyAsyncTaskHandler.onError(new OkHiException("BAD_REQUEST", "Invalid location ID"));
         } else {
-            okVerifyAsyncTaskHandler.onError(new OkHiException(""+responseCode, result));
+            okVerifyAsyncTaskHandler.onError(new OkHiException(OkHiException.UNKNOWN_ERROR_CODE, result));
         }
     }
 
