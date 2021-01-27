@@ -2,6 +2,8 @@ package io.okhi.android_okverify.models;
 
 import java.util.Collections;
 
+import io.okhi.android_core.interfaces.OkHiRequestHandler;
+import io.okhi.android_core.models.OkHiException;
 import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
 import okhttp3.Headers;
