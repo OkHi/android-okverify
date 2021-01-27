@@ -2,8 +2,13 @@ package io.okhi.android_okverify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -23,12 +28,14 @@ import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkHiNotification;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
+import io.okhi.android_okverify.models.OkVerifyStop;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
     private final OkHiAuth auth;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
+    private static String authToken;
 
     private OkVerify(@NonNull Builder builder) {
         super(builder.auth);
@@ -65,21 +72,28 @@ public class OkVerify extends OkHiCore {
             handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, "Address failed to be created successfully. Missing location id"));
             return;
         }
-        anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES, new OkHiRequestHandler<String>() {
-            @Override
-            public void onResult(String authorizationToken) {
-                start(activity.getApplicationContext(), authorizationToken, location, handler);
-            }
+        if(authToken != null){
+            start(activity.getApplicationContext(), authToken, location, handler);
+        }
+        else{
+            anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES, new OkHiRequestHandler<String>() {
+                @Override
+                public void onResult(String authorizationToken) {
+                    authToken = authorizationToken;
+                    start(activity.getApplicationContext(), authorizationToken, location, handler);
+                }
 
-            @Override
-            public void onError(OkHiException exception) {
-                handler.onError(exception);
-            }
-        });
+                @Override
+                public void onError(OkHiException exception) {
+                    handler.onError(exception);
+                }
+            });
+        }
     }
 
     private void start(final Context context, final String authorizationToken, final OkHiLocation location, final OkVerifyCallback<String> handler) {
-        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(), TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
+        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(),
+                TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
             @Override
             public void onSuccess(OkVerifyGeofence geofence) {
                 start(context, geofence, location, handler);
@@ -106,8 +120,54 @@ public class OkVerify extends OkHiCore {
         });
     }
 
-    public static void stop(Context context, String locationId) {
-        BackgroundGeofence.stop(context, locationId);
+    public void stop(@NonNull final Context context, @NonNull final OkHiUser user,
+                     @NonNull final String locationId, @NonNull final OkVerifyCallback<String> handler)  {
+
+        if(authToken != null){
+            stopVerification(context, authToken, locationId, handler);
+        }
+        else{
+            anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES,
+                    new OkHiRequestHandler<String>() {
+                        @Override
+                        public void onResult(String authorizationToken) {
+                            authToken = authorizationToken;
+                            stopVerification(context, authorizationToken, locationId, handler);
+                        }
+
+                        @Override
+                        public void onError(OkHiException exception) {
+                            handler.onError(exception);
+                        }
+                    });
+        }
+
+    }
+
+    private void stopVerification(@NonNull final Context context, @NonNull final String authorizationToken,
+                                  @NonNull final String locationId, @NonNull final OkVerifyCallback<String> handler){
+        OkVerifyAsyncTaskHandler okVerifyAsyncTaskHandler = new OkVerifyAsyncTaskHandler() {
+            @Override
+            public void onSuccess(Object result) {
+                BackgroundGeofence.stop(context, locationId);
+                handler.onSuccess((String) result);
+            }
+
+            @Override
+            public void onError(OkHiException exception) {
+                handler.onError(exception);
+            }
+        };
+        try {
+            JSONObject payload = new JSONObject();
+            payload.put("state", "stop");
+            OkVerifyStop okVerifyStop = new OkVerifyStop(okVerifyAsyncTaskHandler, payload,
+                    auth.getContext().getMode(), locationId, authorizationToken);
+            okVerifyStop.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        catch (JSONException jsonException){
+            handler.onError(new OkHiException("Unknown Error", jsonException.getMessage()));
+        }
     }
 
     public static void init(Context context) {
