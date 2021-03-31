@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 "OkHi Address Verification",
                 "Alerts related to any address verification updates",
                 importance,
-                R.mipmap.ic_launcher,
                 1, // notificationId
                 2 // notification request code
         ));

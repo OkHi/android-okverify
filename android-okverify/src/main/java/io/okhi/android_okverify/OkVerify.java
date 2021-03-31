@@ -124,7 +124,6 @@ public class OkVerify extends OkHiCore {
                 notification.getChannelName(),
                 notification.getChannelDescription(),
                 notification.getChannelImportance(),
-                notification.getIcon(),
                 notification.getNotificationId(),
                 notification.getNotificationRequestCode()
         ));
