@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMessage(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -150,7 +151,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopAddressVerification(View view) {
-        OkVerify.stop(getApplicationContext(), workAddress.getId());
+        OkVerify.stop(getApplicationContext(), workAddress.getId(), new OkVerifyCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                Log.v("Debug", result + ": has been successfully stopped");
+            }
+            @Override
+            public void onError(OkHiException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void startForegroundVerification() {
