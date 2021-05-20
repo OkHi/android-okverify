@@ -14,7 +14,11 @@ import io.okhi.android_background_geofencing.interfaces.RequestHandler;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingWebHook;
+import io.okhi.android_background_geofencing.models.WebHookRequest;
+import io.okhi.android_background_geofencing.models.WebHookType;
+import io.okhi.android_core.models.OkHiAuth;
 import io.okhi.android_core.models.OkHiException;
+import io.okhi.android_core.models.OkHiMode;
 import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -55,8 +59,46 @@ public class OkVerifyGeofence {
             String authorization = "Bearer " + authorizationToken;
             HashMap<String, String> headers = new HashMap<>();
             headers.put("Authorization", authorization);
-            BackgroundGeofencingWebHook webHook = new BackgroundGeofencingWebHook(transitUrl, Constant.DEFAULT_TRANSIT_TIMEOUT, headers, Constant.getLibraryMeta());
-            webHook.save(context);
+            BackgroundGeofencingWebHook geofenceWebHook = new BackgroundGeofencingWebHook(transitUrl, Constant.DEFAULT_TRANSIT_TIMEOUT, headers, Constant.getLibraryMeta());
+            geofenceWebHook.save(context);
+        }
+    }
+
+    public OkVerifyGeofence(Context context, ResponseBody responseBody, String authorizationToken, String transitUrl, String devicePingUrl) {
+        // TODO: have this in a method
+        try {
+            JSONObject configuration = responseBody != null ? new JSONObject(responseBody.string()) : new JSONObject();
+            radius = configuration.has("radius") ? configuration.getInt("radius") : Constant.DEFAULT_GEOFENCE_RADIUS;
+            expiration = configuration.has("expiration") ? configuration.getInt("expiration") : Constant.DEFAULT_GEOFENCE_EXPIRATION;
+            notificationResponsiveness = configuration.has("notification_responsiveness") ? configuration.getInt("notification_responsiveness") : Constant.DEFAULT_GEOFENCE_NOTIFICATION_RESPONSIVENESS;
+            loiteringDelay = configuration.has("loitering_delay") ? configuration.getInt("loitering_delay") : Constant.DEFAULT_GEOFENCE_LOITERING_DELAY;
+            transitionTypes = configuration.has("set_dwell_transition_type") ? Constant.DEFAULT_TRANSITION_TYPES : BackgroundGeofence.TRANSITION_ENTER | BackgroundGeofence.TRANSITION_EXIT;
+            registerOnDeviceRestart = configuration.has("register_on_device_restart") ? configuration.getBoolean("register_on_device_restart") : Constant.DEFAULT_GEOFENCE_REGISTER_ON_DEVICE_RESTART;
+            initialTriggerTransitionTypes = configuration.has("set_initial_triggers") ? Constant.DEFAULT_INITIAL_TRIGGER_TRANSITION_TYPES : 0;
+        } catch (Exception e) {
+            // do nothing, if we have an error use defaults
+        } finally {
+            String authorization = "Bearer " + authorizationToken;
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("Authorization", authorization);
+            BackgroundGeofencingWebHook geofenceWebHook = new BackgroundGeofencingWebHook(
+                transitUrl,
+                Constant.DEFAULT_TRANSIT_TIMEOUT,
+                headers,
+                Constant.getLibraryMeta(),
+                WebHookType.GEOFENCE,
+                WebHookRequest.POST
+            );
+            BackgroundGeofencingWebHook deviceMetaWebHook = new BackgroundGeofencingWebHook(
+                devicePingUrl,
+                Constant.DEFAULT_TRANSIT_TIMEOUT,
+                headers,
+                null,
+                WebHookType.DEVICE_PING,
+                WebHookRequest.POST
+            );
+            geofenceWebHook.save(context);
+            deviceMetaWebHook.save(context);
         }
     }
 
@@ -98,6 +140,33 @@ public class OkVerifyGeofence {
             @Override
             public void onError(OkHiException exception) {
                 handler.onSuccess(new OkVerifyGeofence(context, null, transitUrl, authorizationToken));
+            }
+        });
+    }
+
+    public static void getGeofence(final Context context, final String authorizationToken, OkHiAuth auth, final OkVerifyAsyncTaskHandler<OkVerifyGeofence> handler) {
+        final String transitConfigUrl, transitUrl, devicePingUrl;
+        if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
+            transitConfigUrl = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            transitUrl = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
+            devicePingUrl =  Constant.DEV_BASE_URL + Constant.DEVICE_PING_ENDPOINT;
+        } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
+            transitConfigUrl = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            transitUrl = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
+            devicePingUrl =  Constant.PROD_BASE_URL + Constant.DEVICE_PING_ENDPOINT;
+        } else {
+            transitConfigUrl = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            transitUrl = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
+            devicePingUrl =  Constant.SANDBOX_BASE_URL + Constant.DEVICE_PING_ENDPOINT;
+        }
+        getGeofenceConfiguration(transitConfigUrl, getHeaders(auth.getAccessToken()), new OkVerifyAsyncTaskHandler<ResponseBody>() {
+            @Override
+            public void onSuccess(ResponseBody responseBody) {
+                handler.onSuccess(new OkVerifyGeofence(context, responseBody, authorizationToken, transitUrl, devicePingUrl));
+            }
+            @Override
+            public void onError(OkHiException exception) {
+                handler.onSuccess(new OkVerifyGeofence(context, null, authorizationToken, transitUrl, devicePingUrl));
             }
         });
     }
