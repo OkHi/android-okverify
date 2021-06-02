@@ -12,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="io.sentry.dsn" android:value="" />
         <meta-data android:name="io.okhi.core.branch_id" android:value="" />
         <meta-data android:name="io.okhi.core.client_key" android:value="" />
         <meta-data android:name="io.okhi.core.environment" android:value="" />
