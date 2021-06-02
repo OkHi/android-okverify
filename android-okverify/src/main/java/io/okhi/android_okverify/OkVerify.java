@@ -32,18 +32,16 @@ import io.okhi.android_okverify.models.OkVerifyGeofence;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
-    private final OkHiAuth auth;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
 
-    private OkVerify(@NonNull Builder builder) {
-        super(builder.auth);
+    private OkVerify(Builder builder) throws OkHiException {
+        super(builder.activity);
         this.activity = builder.activity;
-        this.auth = builder.auth;
-        if (builder.auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
+        if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
-        } else if (builder.auth.getContext().getMode().equals(OkHiMode.PROD)) {
+        } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else {
@@ -53,15 +51,13 @@ public class OkVerify extends OkHiCore {
     }
 
     public static class Builder {
-        private final OkHiAuth auth;
         private final Activity activity;
 
-        public Builder(@NonNull OkHiAuth auth, Activity activity) {
-            this.auth = auth;
+        public Builder(@NonNull Activity activity) {
             this.activity = activity;
         }
 
-        public OkVerify build() {
+        public OkVerify build() throws OkHiException {
             return new OkVerify(this);
         }
     }
