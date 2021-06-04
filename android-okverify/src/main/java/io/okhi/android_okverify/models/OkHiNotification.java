@@ -9,40 +9,33 @@ public class OkHiNotification {
     private String channelId;
     private String channelName;
     private String channelDescription;
-    private int icon = 0;
     private int notificationId;
     private int notificationRequestCode;
 
-    public OkHiNotification(@NonNull String title, @NonNull String text, @NonNull String channelId, @NonNull String channelName, @NonNull String channelDescription, int channelImportance, int icon) {
+    public OkHiNotification(@NonNull String title, @NonNull String text, @NonNull String channelId, @NonNull String channelName, @NonNull String channelDescription, int channelImportance) {
         this.title = title;
         this.text = text;
         this.channelId = channelId;
         this.channelName = channelName;
         this.channelDescription = channelDescription;
         this.channelImportance = channelImportance;
-        this.icon = icon;
         this.notificationId = 1;
         this.notificationRequestCode = 2;
     }
 
-    public OkHiNotification(@NonNull String title, @NonNull String text, @NonNull String channelId, @NonNull String channelName, @NonNull String channelDescription, int channelImportance, int icon, int notificationId, int notificationRequestCode) {
+    public OkHiNotification(@NonNull String title, @NonNull String text, @NonNull String channelId, @NonNull String channelName, @NonNull String channelDescription, int channelImportance, int notificationId, int notificationRequestCode) {
         this.title = title;
         this.text = text;
         this.channelId = channelId;
         this.channelName = channelName;
         this.channelDescription = channelDescription;
         this.channelImportance = channelImportance;
-        this.icon = icon;
         this.notificationId = notificationId;
         this.notificationRequestCode = notificationRequestCode;
     }
 
     public int getChannelImportance() {
         return channelImportance;
-    }
-
-    public int getIcon() {
-        return icon;
     }
 
     public String getChannelDescription() {

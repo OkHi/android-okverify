@@ -2,15 +2,20 @@ package io.okhi.android_okverify;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.util.Objects;
 
 import io.okhi.android_background_geofencing.BackgroundGeofencing;
+import io.okhi.android_background_geofencing.interfaces.ResultHandler;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingNotification;
+import io.okhi.android_background_geofencing.models.BackgroundGeofencingWebHook;
+import io.okhi.android_background_geofencing.models.WebHookRequest;
+import io.okhi.android_background_geofencing.models.WebHookType;
 import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
 import io.okhi.android_core.models.OkHiAuth;
@@ -26,18 +31,16 @@ import io.okhi.android_okverify.models.OkVerifyGeofence;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
-    private final OkHiAuth auth;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
 
-    private OkVerify(@NonNull Builder builder) {
-        super(builder.auth);
+    private OkVerify(Builder builder) throws OkHiException {
+        super(builder.activity);
         this.activity = builder.activity;
-        this.auth = builder.auth;
-        if (builder.auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
+        if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
-        } else if (builder.auth.getContext().getMode().equals(OkHiMode.PROD)) {
+        } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
         } else {
@@ -47,15 +50,13 @@ public class OkVerify extends OkHiCore {
     }
 
     public static class Builder {
-        private final OkHiAuth auth;
         private final Activity activity;
 
-        public Builder(@NonNull OkHiAuth auth, Activity activity) {
-            this.auth = auth;
+        public Builder(@NonNull Activity activity) {
             this.activity = activity;
         }
 
-        public OkVerify build() {
+        public OkVerify build() throws OkHiException {
             return new OkVerify(this);
         }
     }
@@ -79,7 +80,7 @@ public class OkVerify extends OkHiCore {
     }
 
     private void start(final Context context, final String authorizationToken, final OkHiLocation location, final OkVerifyCallback<String> handler) {
-        OkVerifyGeofence.getGeofence(context, authorizationToken, auth.getAccessToken(), TRANSIT_CONFIG_URL, TRANSIT_URL, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
+        OkVerifyGeofence.getGeofence(context, authorizationToken, auth, new OkVerifyAsyncTaskHandler<OkVerifyGeofence>() {
             @Override
             public void onSuccess(OkVerifyGeofence geofence) {
                 start(context, geofence, location, handler);
@@ -107,7 +108,31 @@ public class OkVerify extends OkHiCore {
     }
 
     public static void stop(Context context, String locationId) {
-        BackgroundGeofence.stop(context, locationId);
+        initStopWebHook(context, locationId);
+        BackgroundGeofence.stop(context, locationId, new ResultHandler<String>() {
+            @Override
+            public void onSuccess(String result) {
+                // no callback implemented
+            }
+            @Override
+            public void onError(BackgroundGeofencingException exception) {
+                // no callback implemented
+            }
+        });
+    }
+
+    public static void stop(Context context, String locationId, final OkVerifyCallback<String> callback) {
+        initStopWebHook(context, locationId);
+        BackgroundGeofence.stop(context, locationId, new ResultHandler<String>() {
+            @Override
+            public void onSuccess(String result) {
+                callback.onSuccess(result);
+            }
+            @Override
+            public void onError(BackgroundGeofencingException exception) {
+                callback.onError(new OkHiException(exception.getCode(), exception.getMessage()));
+            }
+        });
     }
 
     public static void init(Context context) {
@@ -122,7 +147,6 @@ public class OkVerify extends OkHiCore {
                 notification.getChannelName(),
                 notification.getChannelDescription(),
                 notification.getChannelImportance(),
-                notification.getIcon(),
                 notification.getNotificationId(),
                 notification.getNotificationRequestCode()
         ));
@@ -142,5 +166,28 @@ public class OkVerify extends OkHiCore {
 
     public static boolean isForegroundServiceRunning(Context context) {
         return BackgroundGeofencing.isForegroundServiceRunning(context);
+    }
+
+    private static void initStopWebHook (Context context, String locationId) {
+        BackgroundGeofencingWebHook geofenceWebHook = BackgroundGeofencingWebHook.getWebHook(context, WebHookType.GEOFENCE);
+        if (geofenceWebHook == null) return;
+        String geofenceUrl = geofenceWebHook.getUrl();
+        String stopUrl;
+        if (geofenceUrl.contains(Constant.DEV_BASE_URL)) {
+            stopUrl = Constant.DEV_BASE_URL + Constant.STOP_ENDPOINT_PREFIX + "/" + locationId +  Constant.STOP_ENDPOINT_SURFIX;
+        } else if (geofenceUrl.contains(Constant.SANDBOX_BASE_URL)) {
+            stopUrl = Constant.SANDBOX_BASE_URL + Constant.STOP_ENDPOINT_PREFIX + "/" + locationId +  Constant.STOP_ENDPOINT_SURFIX;
+        } else {
+            stopUrl = Constant.PROD_BASE_URL + Constant.STOP_ENDPOINT_PREFIX + "/" + locationId +  Constant.STOP_ENDPOINT_SURFIX;
+        }
+        BackgroundGeofencingWebHook stopVerificationWebHook = new BackgroundGeofencingWebHook(
+            stopUrl,
+            10000,
+            geofenceWebHook.getHeadersHashMap(),
+            null,
+            WebHookType.STOP,
+            WebHookRequest.PATCH
+        );
+        stopVerificationWebHook.save(context);
     }
 }

@@ -16,6 +16,10 @@ public class Constant {
     public static final String PROD_BASE_URL = "https://api.okhi.io" + API_VERSION;
     public static final String TRANSIT_ENDPOINT = "/users/transits";
     public static final String TRANSIT_CONFIG_ENDPOINT = "/verify/config";
+    public static final String DEVICE_PING_ENDPOINT = "/devices/ping";
+    public static final String STOP_ENDPOINT_PREFIX = "/locations";
+    public static final String STOP_ENDPOINT_SURFIX = "/verifications";
+
     public static final String[] OKVERIFY_SCOPES = {OkHiAccessScope.VERIFY};
     static final long TIME_OUT = 30;
     static final TimeUnit TIME_OUT_UNIT = TimeUnit.SECONDS;
@@ -36,7 +40,7 @@ public class Constant {
         try {
             // library info
             String LIBRARY_NAME = "okverifyMobileAndroid";
-            String LIBRARY_VERSION = "1.1.4";
+            String LIBRARY_VERSION = "1.3.0";
             lib.put("name", LIBRARY_NAME);
             lib.put("version", LIBRARY_VERSION);
             meta.put("lib", lib);

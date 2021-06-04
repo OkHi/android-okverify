@@ -1,9 +1,11 @@
 package io.okhi.okhiverification;
 
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import io.okhi.android_core.OkHi;
+import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
 import io.okhi.android_core.models.OkHiAppContext;
 import io.okhi.android_core.models.OkHiAuth;
@@ -28,15 +31,13 @@ public class MainActivity extends AppCompatActivity {
     OkHi okhi;
 
     // Define an OkHiLocation that'll be used for verification
-    final OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
+    final private OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
 
-    // Define your app context: OkHiMode.SANDBOX | OkHiMode.PROD - dev will be removed in an update
-    private static final OkHiAppContext context = new OkHiAppContext.Builder(Secret.OKHI_DEV_MODE).build();
-
-    // Initialise OkHiAuth with your branchId, clientKey and your apps context
-    private static final OkHiAuth auth = new OkHiAuth.Builder(Secret.OKHI_BRANCH_ID, Secret.OKHI_CLIENT_KEY)
-            .withContext(context)
-            .build();
+    // Create an okhi user
+    final private OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
+        .withFirstName("Julius")
+        .withLastName("Kiano")
+        .build();
 
     // Create the OkVerify object variable
     private OkVerify okVerify;
@@ -50,7 +51,11 @@ public class MainActivity extends AppCompatActivity {
         okhi = new OkHi(this);
 
         // Initialise the okverify library. Must be done onCreate
-        okVerify = new OkVerify.Builder(auth, this).build();
+        try {
+            okVerify = new OkVerify.Builder(this).build();
+        } catch (OkHiException exception) {
+            exception.printStackTrace();
+        }
 
         // Should be invoked one time on app start.
         // (optional) OkHiNotification, use to start a foreground service to transmit verification signals to OkHi servers
@@ -62,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
                 "OkHi Address Verification",
                 "Alerts related to any address verification updates",
                 importance,
-                R.mipmap.ic_launcher,
                 1, // notificationId
                 2 // notification request code
         ));
@@ -75,12 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
         // If all the checks pass attempt to start okverify
         if (canStartAddressVerification) {
-            // Create an okhi user
-            OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
-                    .withFirstName("Julius")
-                    .withLastName("Kiano")
-                    .build();
-
             // Start verification
             okVerify.start(user, workAddress, new OkVerifyCallback<String>() {
                 @Override
@@ -127,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMessage(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+//        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -151,7 +149,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void stopAddressVerification(View view) {
-        OkVerify.stop(getApplicationContext(), workAddress.getId());
+        OkVerify.stop(getApplicationContext(), workAddress.getId(), new OkVerifyCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                Log.v("Debug", result + ": has been successfully stopped");
+            }
+            @Override
+            public void onError(OkHiException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void startForegroundVerification() {
