@@ -1,23 +1,18 @@
 package io.okhi.okhiverification;
 
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import io.okhi.android_core.OkHi;
-import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
-import io.okhi.android_core.models.OkHiAppContext;
-import io.okhi.android_core.models.OkHiAuth;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkHiLocation;
 import io.okhi.android_core.models.OkHiUser;
