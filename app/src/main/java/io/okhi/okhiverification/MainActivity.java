@@ -1,23 +1,18 @@
 package io.okhi.okhiverification;
 
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import io.okhi.android_core.OkHi;
-import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
-import io.okhi.android_core.models.OkHiAppContext;
-import io.okhi.android_core.models.OkHiAuth;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkHiLocation;
 import io.okhi.android_core.models.OkHiUser;
@@ -31,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     OkHi okhi;
 
     // Define an OkHiLocation that'll be used for verification
-    final private OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
+    final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfx7e", -1.314641, 36.836288);
 
     // Create an okhi user
     final private OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
@@ -84,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
-                    startForegroundVerification();
                 }
 
                 @Override
@@ -125,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMessage(String message) {
-//        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        Log.v("MainActivity", message);
     }
 
     @Override
