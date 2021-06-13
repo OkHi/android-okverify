@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     OkHi okhi;
 
     // Define an OkHiLocation that'll be used for verification
-    final private OkHiLocation workAddress = new OkHiLocation("NmUHW84306", -1.313339237582541, 36.842414181487776);
+    final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfx7e", -1.314641, 36.836288);
 
     // Create an okhi user
     final private OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
-                    startForegroundVerification();
                 }
 
                 @Override
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMessage(String message) {
-//        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+        Log.v("MainActivity", message);
     }
 
     @Override
