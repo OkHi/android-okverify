@@ -33,6 +33,7 @@ public class OkVerify extends OkHiCore {
     private final Activity activity;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
+    private boolean withForeground = true;
 
     private OkVerify(Builder builder) throws OkHiException {
         super(builder.activity);
@@ -62,6 +63,11 @@ public class OkVerify extends OkHiCore {
     }
 
     public void start(OkHiUser user, final OkHiLocation location, final OkVerifyCallback<String> handler) {
+        start(user, location, true, handler);
+    }
+
+    public void start(OkHiUser user, final OkHiLocation location, boolean withForeground, final OkVerifyCallback<String> handler) {
+        this.withForeground = withForeground;
         if (location.getId() == null) {
             handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, "Address failed to be created successfully. Missing location id"));
             return;
@@ -97,10 +103,12 @@ public class OkVerify extends OkHiCore {
         geofence.start(context, location.getId(), location.getLat(), location.getLon(), new OkVerifyAsyncTaskHandler<String>() {
             @Override
             public void onSuccess(String result) {
-                try {
-                    startForegroundService(context);
-                } catch (Exception e) {
+                if (withForeground) {
+                    try {
+                        startForegroundService(context);
+                    } catch (Exception e) {
 
+                    }
                 }
                 handler.onSuccess(result);
             }
