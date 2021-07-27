@@ -32,7 +32,7 @@ public class Constant {
     static final boolean DEFAULT_GEOFENCE_REGISTER_ON_DEVICE_RESTART = true;
     static final int DEFAULT_INITIAL_TRIGGER_TRANSITION_TYPES = BackgroundGeofence.INITIAL_TRIGGER_ENTER | BackgroundGeofence.INITIAL_TRIGGER_EXIT | BackgroundGeofence.INITIAL_TRIGGER_DWELL;
     static final int DEFAULT_TRANSITION_TYPES = BackgroundGeofence.TRANSITION_ENTER | BackgroundGeofence.INITIAL_TRIGGER_EXIT | BackgroundGeofence.TRANSITION_DWELL;
-    static final int DEFAULT_TRANSIT_TIMEOUT = 30000;
+    static final int DEFAULT_TRANSIT_TIMEOUT = 5000;
 
     static JSONObject getLibraryMeta() {
         JSONObject meta = new JSONObject();
@@ -40,7 +40,7 @@ public class Constant {
         try {
             // library info
             String LIBRARY_NAME = "okverifyMobileAndroid";
-            String LIBRARY_VERSION = "1.3.3";
+            String LIBRARY_VERSION = "1.3.4";
             lib.put("name", LIBRARY_NAME);
             lib.put("version", LIBRARY_VERSION);
             meta.put("lib", lib);
