@@ -9,7 +9,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
-        versionName "1.4.1"
+        versionName "1.4.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -38,7 +38,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.github.okhi:android-core:719e5ca9bb9ce227f0cbb364982f5373c617e330'
-    implementation 'com.github.okhi:android-background-geofencing:a3cbe734048009e573ed2edb0ca0ef7aa19b31fe'
+    implementation 'com.github.okhi:android-background-geofencing:4925275e31f631be8ffa008ccff3ee743e8333b6'
     implementation ("com.squareup.okhttp3:okhttp:3.12.12"){
         force = true //API 19 support
     }
