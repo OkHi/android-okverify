@@ -51,15 +51,40 @@ public class OkVerify extends OkHiCore {
         }
     }
 
+    private OkVerify(Activity activity, OkHiAuth auth) throws OkHiException {
+        super(auth);
+        this.activity = activity;
+        if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
+            TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
+            TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+        } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
+            TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
+            TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+        } else {
+            TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
+            TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+        }
+    }
+
     public static class Builder {
         private final Activity activity;
+        private final OkHiAuth auth;
 
         public Builder(@NonNull Activity activity) {
             this.activity = activity;
+            this.auth = null;
+        }
+
+        public Builder(@NonNull Activity activity, OkHiAuth auth) {
+            this.activity = activity;
+            this.auth = auth;
         }
 
         public OkVerify build() throws OkHiException {
-            return new OkVerify(this);
+            if (this.auth == null) {
+                return new OkVerify(this);
+            }
+            return new OkVerify(this.activity, this.auth);
         }
     }
 
