@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import io.okhi.android_background_geofencing.BackgroundGeofencing;
@@ -92,6 +93,18 @@ public class OkVerify extends OkHiCore {
     }
 
     public void start(OkHiUser user, final OkHiLocation location, boolean withForeground, final OkVerifyCallback<String> handler) {
+        ArrayList<BackgroundGeofence> existingGeofences = BackgroundGeofence.getAllGeofences(activity.getApplicationContext());
+        Boolean isExistingGeofence = false;
+        for(BackgroundGeofence geofence: existingGeofences) {
+            if (geofence.getId().equals(location.getId())) {
+                isExistingGeofence = true;
+                break;
+            }
+        }
+        if (isExistingGeofence) {
+            handler.onError(new OkHiException("already_exists", "Verification already started"));
+            return;
+        }
         this.withForeground = withForeground;
         if (location.getId() == null) {
             handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, "Address failed to be created successfully. Missing location id"));
