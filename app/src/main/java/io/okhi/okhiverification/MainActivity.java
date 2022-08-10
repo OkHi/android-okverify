@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfx7e", -1.314641, 36.836288);
 
     // Create an okhi user
-    final private OkHiUser user = new OkHiUser.Builder(Secret.OKHI_TEST_PHONE_NUMBER)
+    final private OkHiUser user = new OkHiUser.Builder("User Number")
         .withFirstName("Julius")
         .withLastName("Kiano")
         .build();
@@ -109,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (!OkHi.isGooglePlayServicesAvailable(getApplicationContext())) {
             // Check and request user to enable google play services
             okhi.requestEnableGooglePlayServices(requestHandler);
+        } else if (!OkHi.isLocationPermissionGranted(getApplicationContext())) {
+            okhi.requestLocationPermission("Hey we need  background location permissions", "Pretty please..", requestHandler);
         } else if (!OkHi.isBackgroundLocationPermissionGranted(getApplicationContext())) {
             // Check and request user to grant location permission
             okhi.requestBackgroundLocationPermission("Hey we need  background location permissions", "Pretty please..", requestHandler);
