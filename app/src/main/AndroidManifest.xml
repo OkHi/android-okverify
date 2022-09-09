@@ -17,7 +17,8 @@
         <meta-data android:name="io.okhi.core.environment" android:value="" />
         <meta-data android:name="io.okhi.core.developer" android:value="" />
         <meta-data android:name="io.okhi.core.platform" android:value="" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+          android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
