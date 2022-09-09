@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfx7e", -1.314641, 36.836288);
 
     // Create an okhi user
-    final private OkHiUser user = new OkHiUser.Builder("User Number")
+    final private OkHiUser user = new OkHiUser.Builder("+254712288371")
         .withFirstName("Julius")
         .withLastName("Kiano")
         .build();

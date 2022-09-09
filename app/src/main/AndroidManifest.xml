@@ -12,11 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <meta-data android:name="io.okhi.core.branch_id" android:value="" />
-        <meta-data android:name="io.okhi.core.client_key" android:value="" />
-        <meta-data android:name="io.okhi.core.environment" android:value="" />
+        <meta-data android:name="io.okhi.core.branch_id" android:value="xmdrV3xN1o" />
+        <meta-data android:name="io.okhi.core.client_key" android:value="f31bec5f-61b5-429e-838b-eb718959666d" />
+        <meta-data android:name="io.okhi.core.environment" android:value="sandbox" />
         <meta-data android:name="io.okhi.core.developer" android:value="" />
-        <meta-data android:name="io.okhi.core.platform" android:value="" />
+        <meta-data android:name="io.okhi.core.platform" android:value="android" />
         <activity android:name=".MainActivity"
           android:exported="true">
             <intent-filter>
