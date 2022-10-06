@@ -40,7 +40,7 @@ public class Constant {
         try {
             // library info
             String LIBRARY_NAME = "okverifyMobileAndroid";
-            String LIBRARY_VERSION = "1.6.4";
+            String LIBRARY_VERSION = "1.6.6";
             lib.put("name", LIBRARY_NAME);
             lib.put("version", LIBRARY_VERSION);
             meta.put("lib", lib);
