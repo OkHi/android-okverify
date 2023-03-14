@@ -36,6 +36,9 @@ public class OkVerify extends OkHiCore {
     private final String TRANSIT_CONFIG_URL;
     private boolean withForeground = true;
 
+    private String bearerToken;
+    private OkHiUser okHiUser;
+
     private OkVerify(Builder builder) throws OkHiException {
         super(builder.activity);
         this.activity = builder.activity;
@@ -113,6 +116,8 @@ public class OkVerify extends OkHiCore {
         anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES, new OkHiRequestHandler<String>() {
             @Override
             public void onResult(String authorizationToken) {
+                bearerToken = authorizationToken;
+                okHiUser = user;
                 start(activity.getApplicationContext(), authorizationToken, location, handler);
             }
 
@@ -148,6 +153,7 @@ public class OkVerify extends OkHiCore {
 
                     }
                 }
+                onVerificationStart(result);
                 handler.onSuccess(result);
             }
 
@@ -156,6 +162,13 @@ public class OkVerify extends OkHiCore {
                 handler.onError(exception);
             }
         });
+    }
+
+    private void onVerificationStart(String locationId) {
+        if (okHiUser != null && bearerToken != null) {
+            String token = okHiUser.getFcmPushNotificationToken(); // may be null
+            //TODO: use okhttp to make a post request to server with locationId + token 
+        }
     }
 
     public static void stop(Context context, String locationId) {
