@@ -276,36 +276,27 @@ public class OkVerify extends OkHiCore {
     public static void pushRestartForegroundService(Context context) {
         boolean isForegroundServiceRunning = OkVerify.isForegroundServiceRunning(context);
         if (isForegroundServiceRunning) {
-            Log.d("TAG", "Foreground service running, no need for restart");
             return;
         }
-        Log.d("TAG", "Foreground service not running, attempting restart..");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             try {
                 OkVerify.startForegroundService(context);
-                Log.d("TAG", "Foreground service restarted successfully.");
             } catch (OkHiException e) {
-                Log.d("TAG", "Foreground service restart failed. Unknown error");
                 e.printStackTrace();
-            } catch (Exception _) {
-                Log.d("TAG", "Foreground service restart failed. User interaction required.");
-                try{
-                    showNotification(context);
-                }catch (PackageManager.NameNotFoundException e){
-                    e.printStackTrace();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                showNotification(context);
             }
         } else {
             try {
                 OkVerify.startForegroundService(context);
-                Log.d("TAG", "Foreground service restarted successfully.");
             } catch (OkHiException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static void showNotification(Context context) throws PackageManager.NameNotFoundException {
+    private static void showNotification(Context context){
 
         BackgroundGeofencingNotification backgroundGeofencingNotification = BackgroundGeofencingDB.getNotification(context);
         String notification_channel = PUSH_NOTIFICATION_CHANNEL;
