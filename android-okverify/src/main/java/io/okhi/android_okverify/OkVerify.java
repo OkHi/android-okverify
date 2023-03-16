@@ -1,15 +1,30 @@
 package io.okhi.android_okverify;
 
+import static io.okhi.android_okverify.models.Constant.PUSH_NOTIFICATION_CHANNEL;
+import static io.okhi.android_okverify.models.Constant.PUSH_NOTIFICATION_ID;
+import static io.okhi.android_okverify.models.Constant.PUSH_NOTIFICATION_REQUEST_CODE;
+
+import android.Manifest;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import io.okhi.android_background_geofencing.BackgroundGeofencing;
+import io.okhi.android_background_geofencing.database.BackgroundGeofencingDB;
 import io.okhi.android_background_geofencing.interfaces.ResultHandler;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_background_geofencing.models.BackgroundGeofencingException;
@@ -29,6 +44,7 @@ import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkHiNotification;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
+import io.okhi.android_okverify.receivers.PushButtonNotificationReceiver;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
@@ -166,7 +182,7 @@ public class OkVerify extends OkHiCore {
 
     private void onVerificationStart(String locationId) {
         if (okHiUser != null && bearerToken != null) {
-            String token = okHiUser.getFcmPushNotificationToken(); // may be null
+            // String token = okHiUser.getFcmPushNotificationToken(); // may be null
             //TODO: use okhttp to make a post request to server with locationId + token 
         }
     }
@@ -253,5 +269,72 @@ public class OkVerify extends OkHiCore {
             WebHookRequest.PATCH
         );
         stopVerificationWebHook.save(context);
+    }
+
+    public static void pushRestartForegroundService(Context context) {
+        boolean isForegroundServiceRunning = OkVerify.isForegroundServiceRunning(context);
+        if (isForegroundServiceRunning) {
+            Log.d("TAG", "Foreground service running, no need for restart");
+            return;
+        }
+        Log.d("TAG", "Foreground service not running, attempting restart..");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            try {
+                OkVerify.startForegroundService(context);
+                Log.d("TAG", "Foreground service restarted successfully.");
+            } catch (OkHiException e) {
+                Log.d("TAG", "Foreground service restart failed. Unknown error");
+                e.printStackTrace();
+            } catch (Exception _) {
+                Log.d("TAG", "Foreground service restart failed. User interaction required.");
+                try{
+                    showNotification(context);
+                }catch (PackageManager.NameNotFoundException e){
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            try {
+                OkVerify.startForegroundService(context);
+                Log.d("TAG", "Foreground service restarted successfully.");
+            } catch (OkHiException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void showNotification(Context context) throws PackageManager.NameNotFoundException {
+
+        BackgroundGeofencingNotification backgroundGeofencingNotification = BackgroundGeofencingDB.getNotification(context);
+        String notification_channel = PUSH_NOTIFICATION_CHANNEL;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notification_channel = backgroundGeofencingNotification.getNotification(context).getChannelId();
+        }
+        ApplicationInfo app = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+        Bundle bundle = app.metaData;
+        int icon = bundle.getInt(io.okhi.android_background_geofencing.models.Constant.FOREGROUND_NOTIFICATION_ICON_META_KEY);
+
+        Intent intent = new Intent(context, PushButtonNotificationReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, PUSH_NOTIFICATION_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notification_channel)
+                .setSmallIcon(icon)
+                .setContentTitle(getApplicationName(context) + " address verification stopped")
+                .setContentText("Tap \"Continue\" to resume verification now.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .addAction(0, "Continue", pendingIntent);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        notificationManager.notify(PUSH_NOTIFICATION_ID, builder.build());
+    }
+
+    public static String getApplicationName(Context context) {
+        ApplicationInfo applicationInfo = context.getApplicationInfo();
+        int stringId = applicationInfo.labelRes;
+        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
     }
 }
