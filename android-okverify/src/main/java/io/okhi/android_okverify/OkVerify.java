@@ -310,14 +310,10 @@ public class OkVerify extends OkHiCore {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             notification_channel = backgroundGeofencingNotification.getNotification(context).getChannelId();
         }
-        ApplicationInfo app = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-        Bundle bundle = app.metaData;
-        int icon = bundle.getInt(io.okhi.android_background_geofencing.models.Constant.FOREGROUND_NOTIFICATION_ICON_META_KEY);
 
         Intent intent = new Intent(context, PushButtonNotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, PUSH_NOTIFICATION_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notification_channel)
-                .setSmallIcon(icon)
                 .setContentTitle(getApplicationName(context) + " address verification stopped")
                 .setContentText("Tap \"Continue\" to resume verification now.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
