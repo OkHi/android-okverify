@@ -26,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
     OkHi okhi;
 
     // Define an OkHiLocation that'll be used for verification
-    final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfx7e", -1.314641, 36.836288);
+    final private OkHiLocation workAddress = new OkHiLocation("Ok6pihfp7e", -1.314641, 36.836288);
 
     // Create an okhi user
-    final private OkHiUser user = new OkHiUser.Builder("Add phone number")
+    final private OkHiUser user = new OkHiUser.Builder("+254700123123")
         .withFirstName("Julius")
         .withLastName("Kiano")
         .build();
@@ -142,6 +142,22 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleButtonTap(View view) {
         startAddressVerification();
+    }
+
+    public void pushRestartService(View view) {
+        okhi.requestNotificationPermission(new OkHiRequestHandler<Boolean>() {
+            @Override
+            public void onResult(Boolean result) {
+                if (result) {
+                    OkVerify.pushRestartForegroundService(MainActivity.this);
+                }
+            }
+            @Override
+            public void onError(OkHiException e) {
+                showMessage(e.getCode() + ":" + e.getMessage());
+            }
+        });
+
     }
 
     public void stopAddressVerification(View view) {

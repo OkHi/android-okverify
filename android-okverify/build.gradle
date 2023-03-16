@@ -37,7 +37,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.github.OkHi:android-background-geofencing:v1.9.11'
-    implementation 'com.github.OkHi:android-core:v1.7.5'
+
+    implementation 'com.github.OkHi:android-core:v1.7.4'
     implementation ("com.squareup.okhttp3:okhttp:3.12.12"){
         force = true //API 19 support
     }

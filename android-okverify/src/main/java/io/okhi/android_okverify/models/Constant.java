@@ -34,6 +34,10 @@ public class Constant {
     static final int DEFAULT_TRANSITION_TYPES = BackgroundGeofence.TRANSITION_ENTER | BackgroundGeofence.INITIAL_TRIGGER_EXIT | BackgroundGeofence.TRANSITION_DWELL;
     static final int DEFAULT_TRANSIT_TIMEOUT = 3000;
 
+    public static final String PUSH_NOTIFICATION_CHANNEL = "OKHI SMART ADDRESSING CHANNEL";
+    public static final int PUSH_NOTIFICATION_ID = 27505;
+    public static final int PUSH_NOTIFICATION_REQUEST_CODE = 27525;
+
     static JSONObject getLibraryMeta() {
         JSONObject meta = new JSONObject();
         JSONObject lib = new JSONObject();
