@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.graphics.drawable.IconCompat;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -314,6 +316,7 @@ public class OkVerify extends OkHiCore {
         Intent intent = new Intent(context, PushButtonNotificationReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, PUSH_NOTIFICATION_REQUEST_CODE, intent, PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, notification_channel)
+                .setSmallIcon(R.drawable.ic_person_pin)
                 .setContentTitle(getApplicationName(context) + " address verification stopped")
                 .setContentText("Tap \"Continue\" to resume verification now.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
