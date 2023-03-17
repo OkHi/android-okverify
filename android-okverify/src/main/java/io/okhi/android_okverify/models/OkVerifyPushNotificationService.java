@@ -51,7 +51,7 @@ public class OkVerifyPushNotificationService {
     }
     OkHttpClient client = OkVerifyUtil.getHttpClient();
     RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), payload.toString());
-    Headers headers = OkVerifyUtil.getHeaders(authToken);
+    Headers headers = OkVerifyUtil.getHeaders("Bearer " + authToken);
     Request.Builder requestBuild = new Request.Builder();
     requestBuild.post(requestBody);
     requestBuild.url(url);
