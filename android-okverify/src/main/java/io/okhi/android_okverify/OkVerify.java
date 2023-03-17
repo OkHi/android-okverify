@@ -2,7 +2,6 @@ package io.okhi.android_okverify;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -20,16 +19,15 @@ import io.okhi.android_background_geofencing.models.WebHookType;
 import io.okhi.android_core.OkHiCore;
 import io.okhi.android_core.interfaces.OkHiRequestHandler;
 import io.okhi.android_core.models.OkHiAuth;
-import io.okhi.android_core.models.OkHiCoreUtil;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkHiLocation;
 import io.okhi.android_core.models.OkHiMode;
 import io.okhi.android_core.models.OkHiUser;
-import io.okhi.android_okverify.API.OkHiFCMService;
 import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkHiNotification;
+import io.okhi.android_okverify.models.OkVerifyPushNotificationService;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
 
 public class OkVerify extends OkHiCore {
@@ -168,21 +166,9 @@ public class OkVerify extends OkHiCore {
 
     private void onVerificationStart(String locationId) {
         if (okHiUser != null && bearerToken != null) {
-            String token = okHiUser.getFcmPushNotificationToken(); // may be null
-            try{
-                OkHiFCMService.postFcmToken(locationId, token, new OkHiRequestHandler<String>() {
-                    @Override
-                    public void onResult(String message) {
-                        Log.d("FCM TEST", message);
-                    }
-                    @Override
-                    public void onError(OkHiException exception) {
-                        exception.printStackTrace();
-                        Log.d("FCM TEST", exception.getMessage());
-                    }
-                });
-            }catch (Exception e){
-                e.printStackTrace();
+            String token = okHiUser.getFcmPushNotificationToken();
+            if (token != null) {
+                OkVerifyPushNotificationService.saveFCMToken(bearerToken, token, locationId);
             }
         }
     }
