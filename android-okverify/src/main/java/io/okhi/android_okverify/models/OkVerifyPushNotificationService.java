@@ -68,6 +68,7 @@ public class OkVerifyPushNotificationService {
       @Override
       public void onResponse(Call call, Response response) throws IOException {
         Log.v(TAG, "Sync result: " + response.isSuccessful());
+        response.close();
       }
     });
   }
