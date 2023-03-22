@@ -41,9 +41,12 @@ public class OkVerifyPushNotificationService {
   private static int NOTIFICATION_REQUEST_CODE = 25;
   private static int NOTIFICATION_ID = 25;
 
-  public static void saveFCMToken(String authToken, String fcmToken, String locationId) {
+  public static void saveFCMToken(String baseUrl, String authToken, String fcmToken, String locationId) {
+    if (baseUrl == null || authToken == null || fcmToken == null || locationId == null) {
+      return;
+    }
     JSONObject payload = new JSONObject();
-    String url = "https://dev-api.okhi.io/v5/locations/"+locationId+"/verifications/start";
+    String url = baseUrl+ "/" + locationId + "/verifications/start";
     try {
       payload.put("push_notification_token", fcmToken);
     } catch (Exception e) {

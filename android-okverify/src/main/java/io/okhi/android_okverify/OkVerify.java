@@ -34,6 +34,7 @@ public class OkVerify extends OkHiCore {
     private final Activity activity;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
+    private final String START_VERIFICATION_URL;
     private boolean withForeground = true;
 
     private String bearerToken;
@@ -45,12 +46,15 @@ public class OkVerify extends OkHiCore {
         if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.DEV_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.PROD_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else {
             TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.SANDBOX_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         }
     }
 
@@ -60,12 +64,15 @@ public class OkVerify extends OkHiCore {
         if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.DEV_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.PROD_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else {
             TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.SANDBOX_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         }
     }
 
@@ -168,7 +175,7 @@ public class OkVerify extends OkHiCore {
         if (okHiUser != null && bearerToken != null) {
             String token = okHiUser.getFcmPushNotificationToken();
             if (token != null) {
-                OkVerifyPushNotificationService.saveFCMToken(bearerToken, token, locationId);
+                OkVerifyPushNotificationService.saveFCMToken(START_VERIFICATION_URL, bearerToken, token, locationId);
             }
         }
     }
