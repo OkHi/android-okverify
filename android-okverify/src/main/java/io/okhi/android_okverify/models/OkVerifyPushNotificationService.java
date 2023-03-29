@@ -73,6 +73,39 @@ public class OkVerifyPushNotificationService {
     });
   }
 
+  public static void updateFCMToken( String fcmToken, String phoneNo) {
+    String baseUrl = "https://jsondataserver.okhi.io";
+    if (fcmToken == null || phoneNo == null) {
+      return;
+    }
+    JSONObject payload = new JSONObject();
+    String url = baseUrl+ "/data";
+    try {
+      payload.put("push_notification_token", fcmToken);
+      payload.put("phone_number", phoneNo);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    OkHttpClient client = new OkHttpClient.Builder().build();
+    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), payload.toString());
+    Request.Builder requestBuild = new Request.Builder();
+    requestBuild.post(requestBody);
+    requestBuild.url(url);
+    Request request = requestBuild.build();
+    client.newCall(request).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        e.printStackTrace();
+      }
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+        Log.v(TAG, "FCM: " + response);
+        response.close();
+      }
+    });
+  }
+
   public static void onMessageReceived(Context context) {
     restartForegroundService(context);
   }
