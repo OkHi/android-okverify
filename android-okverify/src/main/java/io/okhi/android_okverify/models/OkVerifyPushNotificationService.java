@@ -16,11 +16,16 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import io.okhi.android_background_geofencing.database.BackgroundGeofencingDB;
+import io.okhi.android_background_geofencing.models.BackgroundGeofence;
 import io.okhi.android_core.models.OkHiException;
+import io.okhi.android_core.models.OkPreference;
 import io.okhi.android_okverify.OkVerify;
 import io.okhi.android_okverify.R;
 import okhttp3.Call;
@@ -73,37 +78,43 @@ public class OkVerifyPushNotificationService {
     });
   }
 
-  public static void updateFCMToken( String fcmToken, String phoneNo) {
-    String baseUrl = "https://jsondataserver.okhi.io";
-    if (fcmToken == null || phoneNo == null) {
-      return;
-    }
-    JSONObject payload = new JSONObject();
-    String url = baseUrl+ "/data";
+  public static void onNewToken(String token, Context context) {
+    String url = "https://sandbox-api.okhi.io/v5/users/push-notification-token";
+    if (token == null) return;
     try {
-      payload.put("push_notification_token", fcmToken);
-      payload.put("phone_number", phoneNo);
+      JSONObject payload = new JSONObject();
+      String authToken = OkPreference.getItem("okhi:recent:token", context);
+      if (authToken == null) return;
+      Headers headers = OkVerifyUtil.getHeaders("Bearer " + authToken);
+      ArrayList<BackgroundGeofence> geofences =  BackgroundGeofencingDB.getAllGeofences(context);
+      if (geofences.size() < 1) return;
+      JSONArray ids = new JSONArray();
+      for(BackgroundGeofence geofence: geofences) {
+        ids.put(geofence.getId());
+      }
+      payload.put("location_ids", ids);
+      payload.put("push_notification_token", token);
+      OkHttpClient client = new OkHttpClient.Builder().build();
+      RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), payload.toString());
+      Request.Builder requestBuild = new Request.Builder();
+      requestBuild.post(requestBody);
+      requestBuild.url(url);
+      requestBuild.headers(headers);
+      Request request = requestBuild.build();
+      client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          e.printStackTrace();
+        }
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+          Log.v(TAG, "FCM: " + response);
+          response.close();
+        }
+      });
     } catch (Exception e) {
       e.printStackTrace();
     }
-
-    OkHttpClient client = new OkHttpClient.Builder().build();
-    RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), payload.toString());
-    Request.Builder requestBuild = new Request.Builder();
-    requestBuild.post(requestBody);
-    requestBuild.url(url);
-    Request request = requestBuild.build();
-    client.newCall(request).enqueue(new Callback() {
-      @Override
-      public void onFailure(Call call, IOException e) {
-        e.printStackTrace();
-      }
-      @Override
-      public void onResponse(Call call, Response response) throws IOException {
-        Log.v(TAG, "FCM: " + response);
-        response.close();
-      }
-    });
   }
 
   public static void onMessageReceived(Context context) {
