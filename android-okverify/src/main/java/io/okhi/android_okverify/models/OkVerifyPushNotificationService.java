@@ -22,8 +22,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import io.okhi.android_background_geofencing.BackgroundGeofencing;
 import io.okhi.android_background_geofencing.database.BackgroundGeofencingDB;
 import io.okhi.android_background_geofencing.models.BackgroundGeofence;
+import io.okhi.android_core.models.OkHiAppContext;
 import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkPreference;
 import io.okhi.android_okverify.OkVerify;
@@ -79,7 +81,10 @@ public class OkVerifyPushNotificationService {
   }
 
   public static void onNewToken(String token, Context context) {
-    String url = "https://sandbox-api.okhi.io/v5/users/push-notification-token";
+    String env = OkHiAppContext.getEnv(context);
+    if (env == null) return;
+    String baseUrl = env.equals("prod") ? Constant.PROD_BASE_URL : env.equals("dev") ? Constant.DEV_BASE_URL : Constant.SANDBOX_BASE_URL;
+    String url = baseUrl + Constant.PUSH_NOTIFICATION_UPDATE_ENDPOINT;
     if (token == null) return;
     try {
       JSONObject payload = new JSONObject();
@@ -118,6 +123,7 @@ public class OkVerifyPushNotificationService {
   }
 
   public static void onMessageReceived(Context context) {
+    BackgroundGeofencing.triggerGeofenceEvents(context);
     restartForegroundService(context);
   }
 
