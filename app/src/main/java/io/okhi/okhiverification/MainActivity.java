@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         startAddressVerification();
     }
     public void handleUpdateButton(View view) {
-        OkVerifyPushNotificationService.updateFCMToken( "thgjklnm,mvkuygjf567890hbuikbkjhbhjvjgh hjk kj nv m mn", "+2547000000");
+        OkVerifyPushNotificationService.onNewToken( "thgjklnm,mvkuygjf567890hbuikbkjhbhjvjgh hjk kj nv m mn", getApplicationContext());
     }
 
     public void stopAddressVerification(View view) {
