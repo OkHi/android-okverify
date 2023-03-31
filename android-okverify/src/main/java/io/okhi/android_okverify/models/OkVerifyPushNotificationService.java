@@ -102,7 +102,7 @@ public class OkVerifyPushNotificationService {
       OkHttpClient client = new OkHttpClient.Builder().build();
       RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), payload.toString());
       Request.Builder requestBuild = new Request.Builder();
-      requestBuild.post(requestBody);
+      requestBuild.patch(requestBody);
       requestBuild.url(url);
       requestBuild.headers(headers);
       Request request = requestBuild.build();
