@@ -2,7 +2,7 @@
   "name": "android-okverify",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "https://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@github.com/OkHi/android-okverify.git",
+  "repository": "https://github.com/OkHi/android-okverify.git",
   "author": "Julius Kiano <jgkiano@gmail.com>",
   "license": "MIT",
   "scripts": {
