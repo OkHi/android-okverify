@@ -1,15 +1,25 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.artifactory'
+apply plugin: 'maven-publish'
 group='OkHi'
 
+def libraryGroupId = 'io.okhi.android'
+def libraryArtifactId = 'okverify'
+def libraryCompileSdk = 33
+def libraryTargetSdk = 33
+def libraryMinSdk = 19
+def libraryVersionCode = 1
+def libraryVersion = '1.9.11'
+
 android {
-    compileSdkVersion 33
+    compileSdkVersion libraryCompileSdk
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 33
-        versionCode 1
-        versionName "1.9.11"
+        minSdkVersion libraryMinSdk
+        targetSdkVersion libraryTargetSdk
+        versionCode libraryVersionCode
+        versionName libraryVersion
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -36,9 +46,38 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'com.github.OkHi:android-background-geofencing:v1.9.11'
-    implementation 'com.github.OkHi:android-core:v1.7.3'
+    implementation 'io.okhi.android:background-geofencing:1.9.20'
+    implementation 'io.okhi.android:core:1.7.9'
     implementation ("com.squareup.okhttp3:okhttp:3.12.12"){
         force = true //API 19 support
+    }
+}
+
+publishing {
+    publications {
+        aar(MavenPublication) {
+            groupId libraryGroupId
+            version libraryVersion
+            artifactId libraryArtifactId
+            artifact("$buildDir/outputs/aar/android-okverify-release.aar")
+        }
+    }
+}
+
+artifactory {
+    contextUrl = artifactory_context_url
+    publish {
+        repository {
+            repoKey = artifactory_repo_key
+            username = artifactory_username
+            password = artifactory_password
+        }
+        defaults {
+            publications('aar')
+            publishArtifacts = true
+
+            properties = ['qa.level': 'basic', 'q.os': 'android', 'dev.team': 'core']
+            publishPom = true
+        }
     }
 }

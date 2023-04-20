@@ -1,0 +1,11 @@
+{
+  "name": "android-okverify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/OkHi/android-okverify.git",
+  "author": "Julius Kiano <jgkiano@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "pub": "./gradlew clean && ./gradlew assembleRelease && ./gradlew artifactoryPublish"
+  }
+}
