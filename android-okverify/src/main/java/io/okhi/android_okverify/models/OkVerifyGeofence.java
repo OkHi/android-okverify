@@ -131,7 +131,7 @@ public class OkVerifyGeofence {
     }
 
     public static void getGeofence(final Context context, final String authorizationToken, String accessToken, String configurationUrl, final String transitUrl, final OkVerifyAsyncTaskHandler<OkVerifyGeofence> handler) {
-        getGeofenceConfiguration(configurationUrl, getHeaders(accessToken), new OkVerifyAsyncTaskHandler<ResponseBody>() {
+        getGeofenceConfiguration(configurationUrl, OkVerifyUtil.getHeaders(accessToken), new OkVerifyAsyncTaskHandler<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody responseBody) {
                 handler.onSuccess(new OkVerifyGeofence(context, responseBody, transitUrl, authorizationToken));
@@ -159,7 +159,7 @@ public class OkVerifyGeofence {
             transitUrl = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             devicePingUrl =  Constant.SANDBOX_BASE_URL + Constant.DEVICE_PING_ENDPOINT;
         }
-        getGeofenceConfiguration(transitConfigUrl, getHeaders(auth.getAccessToken()), new OkVerifyAsyncTaskHandler<ResponseBody>() {
+        getGeofenceConfiguration(transitConfigUrl, OkVerifyUtil.getHeaders(auth.getAccessToken()), new OkVerifyAsyncTaskHandler<ResponseBody>() {
             @Override
             public void onSuccess(ResponseBody responseBody) {
                 handler.onSuccess(new OkVerifyGeofence(context, responseBody, authorizationToken, transitUrl, devicePingUrl));
@@ -196,7 +196,7 @@ public class OkVerifyGeofence {
 
     private static void getGeofenceConfiguration(String configurationUrl, Headers headers, final OkVerifyAsyncTaskHandler<ResponseBody> handler) {
         Request request = new Request.Builder().url(configurationUrl).headers(headers).build();
-        getHttpClient().newCall(request).enqueue(new Callback() {
+        OkVerifyUtil.getHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 handler.onError(new OkHiException(OkHiException.NETWORK_ERROR_CODE, OkHiException.NETWORK_ERROR_MESSAGE));
@@ -213,37 +213,5 @@ public class OkVerifyGeofence {
                 response.close();
             }
         });
-    }
-
-    private static OkHttpClient getHttpClient() {
-        ConnectionSpec spec = new ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
-                .supportsTlsExtensions(true)
-                .tlsVersions(TlsVersion.TLS_1_2, TlsVersion.TLS_1_1, TlsVersion.TLS_1_0)
-                .cipherSuites(
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,
-                        CipherSuite.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA,
-                        CipherSuite.TLS_ECDHE_RSA_WITH_RC4_128_SHA,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA,
-                        CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA)
-                .build();
-        return new OkHttpClient.Builder()
-                .connectionSpecs(Collections.singletonList(spec))
-                .connectTimeout(Constant.TIME_OUT, Constant.TIME_OUT_UNIT)
-                .writeTimeout(Constant.TIME_OUT, Constant.TIME_OUT_UNIT)
-                .readTimeout(Constant.TIME_OUT, Constant.TIME_OUT_UNIT)
-                .build();
-    }
-
-    private static Headers getHeaders(String accessToken) {
-        Headers.Builder builder = new Headers.Builder();
-        builder.add("Authorization", accessToken);
-        return builder.build();
     }
 }

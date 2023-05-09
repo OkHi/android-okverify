@@ -2,7 +2,6 @@ package io.okhi.android_okverify;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -28,13 +27,18 @@ import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
 import io.okhi.android_okverify.models.OkHiNotification;
+import io.okhi.android_okverify.models.OkVerifyPushNotificationService;
 import io.okhi.android_okverify.models.OkVerifyGeofence;
 
 public class OkVerify extends OkHiCore {
     private final Activity activity;
     private final String TRANSIT_URL;
     private final String TRANSIT_CONFIG_URL;
+    private final String START_VERIFICATION_URL;
     private boolean withForeground = true;
+
+    private String bearerToken;
+    private OkHiUser okHiUser;
 
     private OkVerify(Builder builder) throws OkHiException {
         super(builder.activity);
@@ -42,12 +46,15 @@ public class OkVerify extends OkHiCore {
         if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.DEV_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.PROD_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else {
             TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.SANDBOX_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         }
     }
 
@@ -57,12 +64,15 @@ public class OkVerify extends OkHiCore {
         if (auth.getContext().getMode().equals(Constant.OkHi_DEV_MODE)) {
             TRANSIT_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.DEV_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.DEV_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else if (auth.getContext().getMode().equals(OkHiMode.PROD)) {
             TRANSIT_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.PROD_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.PROD_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         } else {
             TRANSIT_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_ENDPOINT;
             TRANSIT_CONFIG_URL = Constant.SANDBOX_BASE_URL + Constant.TRANSIT_CONFIG_ENDPOINT;
+            START_VERIFICATION_URL = Constant.SANDBOX_BASE_URL + Constant.START_VERIFICATION_ENDPOINT;
         }
     }
 
@@ -113,6 +123,8 @@ public class OkVerify extends OkHiCore {
         anonymousSignWithPhoneNumber(user.getPhone(), Constant.OKVERIFY_SCOPES, new OkHiRequestHandler<String>() {
             @Override
             public void onResult(String authorizationToken) {
+                bearerToken = authorizationToken;
+                okHiUser = user;
                 start(activity.getApplicationContext(), authorizationToken, location, handler);
             }
 
@@ -148,6 +160,7 @@ public class OkVerify extends OkHiCore {
 
                     }
                 }
+                onVerificationStart(result);
                 handler.onSuccess(result);
             }
 
@@ -156,6 +169,15 @@ public class OkVerify extends OkHiCore {
                 handler.onError(exception);
             }
         });
+    }
+
+    private void onVerificationStart(String locationId) {
+        if (okHiUser != null && bearerToken != null) {
+            String token = okHiUser.getFcmPushNotificationToken();
+            if (token != null) {
+                OkVerifyPushNotificationService.saveFCMToken(START_VERIFICATION_URL, bearerToken, token, locationId);
+            }
+        }
     }
 
     public static void stop(Context context, String locationId) {
