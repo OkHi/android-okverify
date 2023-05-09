@@ -19,6 +19,7 @@ import io.okhi.android_core.models.OkHiUser;
 import io.okhi.android_okverify.OkVerify;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.OkHiNotification;
+import io.okhi.android_okverify.models.OkVerifyPushNotificationService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     OkHi okhi;
 
     // Define an OkHiLocation that'll be used for verification
-    final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfx7e", -1.314641, 36.836288);
+    final private OkHiLocation workAddress = new OkHiLocation("Ok6pjhfi7e", -1.314641, 36.836288);
 
     // Create an okhi user
     final private OkHiUser user = new OkHiUser.Builder("Add phone number")
@@ -142,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void handleButtonTap(View view) {
         startAddressVerification();
+    }
+    public void handleUpdateButton(View view) {
+        OkVerifyPushNotificationService.onNewToken( "thgjklnm,mvkuygjf567890hbuikbkjhbhjvjgh hjk kj nv m mn", getApplicationContext());
     }
 
     public void stopAddressVerification(View view) {

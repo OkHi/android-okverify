@@ -16,6 +16,8 @@ public class Constant {
     public static final String PROD_BASE_URL = "https://api.okhi.io" + API_VERSION;
 
     public static final String START_VERIFICATION_ENDPOINT = "/locations";
+
+    public static final String PUSH_NOTIFICATION_UPDATE_ENDPOINT = "/users/push-notification-token";
     public static final String TRANSIT_ENDPOINT = "/users/transits";
     public static final String TRANSIT_CONFIG_ENDPOINT = "/verify/config";
     public static final String DEVICE_PING_ENDPOINT = "/devices/ping";
@@ -42,7 +44,7 @@ public class Constant {
         try {
             // library info
             String LIBRARY_NAME = "okverifyMobileAndroid";
-            String LIBRARY_VERSION = "1.9.22";
+            String LIBRARY_VERSION = "1.9.23";
             lib.put("name", LIBRARY_NAME);
             lib.put("version", LIBRARY_VERSION);
             meta.put("lib", lib);

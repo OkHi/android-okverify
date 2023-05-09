@@ -16,11 +16,18 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import io.okhi.android_background_geofencing.BackgroundGeofencing;
+import io.okhi.android_background_geofencing.database.BackgroundGeofencingDB;
+import io.okhi.android_background_geofencing.models.BackgroundGeofence;
+import io.okhi.android_core.models.OkHiAppContext;
 import io.okhi.android_core.models.OkHiException;
+import io.okhi.android_core.models.OkPreference;
 import io.okhi.android_okverify.OkVerify;
 import io.okhi.android_okverify.R;
 import okhttp3.Call;
@@ -73,7 +80,50 @@ public class OkVerifyPushNotificationService {
     });
   }
 
+  public static void onNewToken(String token, Context context) {
+    String env = OkHiAppContext.getEnv(context);
+    if (env == null) return;
+    String baseUrl = env.equals("prod") ? Constant.PROD_BASE_URL : env.equals("dev") ? Constant.DEV_BASE_URL : Constant.SANDBOX_BASE_URL;
+    String url = baseUrl + Constant.PUSH_NOTIFICATION_UPDATE_ENDPOINT;
+    if (token == null) return;
+    try {
+      JSONObject payload = new JSONObject();
+      String authToken = OkPreference.getItem("okhi:recent:token", context);
+      if (authToken == null) return;
+      Headers headers = OkVerifyUtil.getHeaders("Bearer " + authToken);
+      ArrayList<BackgroundGeofence> geofences =  BackgroundGeofencingDB.getAllGeofences(context);
+      if (geofences.size() < 1) return;
+      JSONArray ids = new JSONArray();
+      for(BackgroundGeofence geofence: geofences) {
+        ids.put(geofence.getId());
+      }
+      payload.put("location_ids", ids);
+      payload.put("push_notification_token", token);
+      OkHttpClient client = new OkHttpClient.Builder().build();
+      RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), payload.toString());
+      Request.Builder requestBuild = new Request.Builder();
+      requestBuild.patch(requestBody);
+      requestBuild.url(url);
+      requestBuild.headers(headers);
+      Request request = requestBuild.build();
+      client.newCall(request).enqueue(new Callback() {
+        @Override
+        public void onFailure(Call call, IOException e) {
+          e.printStackTrace();
+        }
+        @Override
+        public void onResponse(Call call, Response response) throws IOException {
+          Log.v(TAG, "FCM: " + response);
+          response.close();
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   public static void onMessageReceived(Context context) {
+    BackgroundGeofencing.triggerGeofenceEvents(context);
     restartForegroundService(context);
   }
 
