@@ -16,6 +16,8 @@ public class Constant {
     public static final String PROD_BASE_URL = "https://api.okhi.io" + API_VERSION;
 
     public static final String START_VERIFICATION_ENDPOINT = "/locations";
+
+    public static final String PUSH_NOTIFICATION_UPDATE_ENDPOINT = "/users/push-notification-token";
     public static final String TRANSIT_ENDPOINT = "/users/transits";
     public static final String TRANSIT_CONFIG_ENDPOINT = "/verify/config";
     public static final String DEVICE_PING_ENDPOINT = "/devices/ping";

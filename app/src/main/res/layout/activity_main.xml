@@ -29,4 +29,17 @@
         app:layout_constraintTop_toBottomOf="@+id/button"
         android:onClick="stopAddressVerification"
         app:layout_constraintVertical_bias="0.034" />
+
+    <Button
+        android:id="@+id/updateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="276dp"
+        android:text="Update FCM"
+        android:onClick="handleUpdateButton"
+        app:layout_constraintEnd_toEndOf="@+id/button"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="@+id/button"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
