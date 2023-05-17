@@ -5,7 +5,7 @@ pluginManagement {
         mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven { url "https://okhi.jfrog.io/artifactory/maven" }
+        maven { url "https://repo.okhi.io/artifactory/maven" }
     }
 }
 dependencyResolutionManagement {
@@ -15,7 +15,7 @@ dependencyResolutionManagement {
         mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
-        maven { url "https://okhi.jfrog.io/artifactory/maven" }
+        maven { url "https://repo.okhi.io/artifactory/maven" }
     }
 }
 
