@@ -122,11 +122,6 @@ public class OkVerifyPushNotificationService {
     }
   }
 
-  public static void onMessageReceived(Context context, String source, String geoPointProviderSuffix) {
-    BackgroundGeofencing.triggerGeofenceEvents(context, source, geoPointProviderSuffix);
-    restartForegroundService(context);
-  }
-
   public static void onMessageReceived(Context context) {
     BackgroundGeofencing.triggerGeofenceEvents(context, null, "notification");
     restartForegroundService(context);
@@ -146,7 +141,8 @@ public class OkVerifyPushNotificationService {
       } catch (OkHiException e) {
         Log.d(TAG, "Foreground service restart failed. Unknown error");
         e.printStackTrace();
-      } catch (Exception _) {
+      } catch (Exception e) {
+        e.printStackTrace();
         Log.d(TAG, "Foreground service restart failed. User interaction required.");
         showNotification(context);
       }
