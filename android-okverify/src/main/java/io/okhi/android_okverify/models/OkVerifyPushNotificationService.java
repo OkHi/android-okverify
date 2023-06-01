@@ -122,13 +122,13 @@ public class OkVerifyPushNotificationService {
     }
   }
 
-  public static void onMessageReceived(Context context, String source) {
-    BackgroundGeofencing.triggerGeofenceEvents(context, source);
+  public static void onMessageReceived(Context context, String source, String geoPointProviderSuffix) {
+    BackgroundGeofencing.triggerGeofenceEvents(context, source, geoPointProviderSuffix);
     restartForegroundService(context);
   }
 
   public static void onMessageReceived(Context context) {
-    BackgroundGeofencing.triggerGeofenceEvents(context, null);
+    BackgroundGeofencing.triggerGeofenceEvents(context, null, null);
     restartForegroundService(context);
   }
 
