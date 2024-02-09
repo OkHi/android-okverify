@@ -5,8 +5,8 @@ group='OkHi'
 
 def libraryGroupId = 'io.okhi.android'
 def libraryArtifactId = 'okverify'
-def libraryCompileSdk = 33
-def libraryTargetSdk = 33
+def libraryCompileSdk = 34
+def libraryTargetSdk = 34
 def libraryMinSdk = 19
 def libraryVersionCode = 1
 def libraryVersion = '1.9.37'
@@ -46,8 +46,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    implementation 'io.okhi.android:background-geofencing:1.9.35'
-    implementation 'io.okhi.android:core:1.7.16'
+    implementation 'io.okhi.android:background-geofencing:1.9.37'
+    implementation 'io.okhi.android:core:1.7.17'
     implementation ("com.squareup.okhttp3:okhttp:3.12.12"){
         force = true //API 19 support
     }
