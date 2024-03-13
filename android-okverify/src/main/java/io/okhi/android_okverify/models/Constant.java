@@ -38,13 +38,15 @@ public class Constant {
     static final int DEFAULT_TRANSITION_TYPES = BackgroundGeofence.TRANSITION_ENTER | BackgroundGeofence.INITIAL_TRIGGER_EXIT | BackgroundGeofence.TRANSITION_DWELL;
     static final int DEFAULT_TRANSIT_TIMEOUT = 3000;
 
+    public static final String OKPR_REGISTERED_GEOFENCES = "registered_geofences";
+
     static JSONObject getLibraryMeta() {
         JSONObject meta = new JSONObject();
         JSONObject lib = new JSONObject();
         try {
             // library info
             String LIBRARY_NAME = "okverifyMobileAndroid";
-            String LIBRARY_VERSION = "1.9.40";
+            String LIBRARY_VERSION = "1.9.41";
             lib.put("name", LIBRARY_NAME);
             lib.put("version", LIBRARY_VERSION);
             meta.put("lib", lib);
