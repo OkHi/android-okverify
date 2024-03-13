@@ -23,6 +23,7 @@ import io.okhi.android_core.models.OkHiException;
 import io.okhi.android_core.models.OkHiLocation;
 import io.okhi.android_core.models.OkHiMode;
 import io.okhi.android_core.models.OkHiUser;
+import io.okhi.android_core.models.OkPreference;
 import io.okhi.android_okverify.interfaces.OkVerifyAsyncTaskHandler;
 import io.okhi.android_okverify.interfaces.OkVerifyCallback;
 import io.okhi.android_okverify.models.Constant;
@@ -262,5 +263,14 @@ public class OkVerify extends OkHiCore {
             WebHookRequest.PATCH
         );
         stopVerificationWebHook.save(context);
+    }
+
+    public static String fetchRegisteredGeofences(Context context) {
+        try {
+            return OkPreference.getItem(Constant.OKPR_REGISTERED_GEOFENCES, context);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
