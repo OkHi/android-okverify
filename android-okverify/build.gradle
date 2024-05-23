@@ -9,7 +9,7 @@ def libraryCompileSdk = 34
 def libraryTargetSdk = 34
 def libraryMinSdk = 19
 def libraryVersionCode = 1
-def libraryVersion = '1.9.42'
+def libraryVersion = '1.9.41'
 
 android {
     compileSdkVersion libraryCompileSdk
@@ -42,7 +42,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
