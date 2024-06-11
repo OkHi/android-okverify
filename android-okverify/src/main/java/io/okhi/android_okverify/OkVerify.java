@@ -273,8 +273,4 @@ public class OkVerify extends OkHiCore {
             return null;
         }
     }
-
-    public static String sayHello() {
-        return "Hello";
-    }
 }
