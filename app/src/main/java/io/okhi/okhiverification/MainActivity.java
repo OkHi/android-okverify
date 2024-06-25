@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         // If all the checks pass attempt to start okverify
         if (canStartAddressVerification) {
             // Start verification
-            okVerify.start(user, workAddress, new OkVerifyCallback<String>() {
+            okVerify.start(user, workAddress, false, new OkVerifyCallback<String>() {
                 @Override
                 public void onSuccess(String result) {
                     showMessage("Successfully started verification for: " + result);
