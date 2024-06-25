@@ -171,7 +171,7 @@ public class OkVerifyGeofence {
         });
     }
 
-    public void start(Context context, final String id, double lat, double lon, final OkVerifyAsyncTaskHandler<String> handler) {
+    public void start(Context context, Boolean withBackground, final String id, double lat, double lon, final OkVerifyAsyncTaskHandler<String> handler) {
         BackgroundGeofence backgroundGeofence = new BackgroundGeofence.BackgroundGeofenceBuilder(id, lat, lon)
                 .setConfiguration(registerOnDeviceRestart)
                 .setExpiration(expiration)
@@ -181,7 +181,7 @@ public class OkVerifyGeofence {
                 .setRadius(radius)
                 .setTransitionTypes(transitionTypes)
                 .build();
-        backgroundGeofence.start(context, new RequestHandler() {
+        backgroundGeofence.start(context, withBackground, new RequestHandler() {
             @Override
             public void onSuccess() {
                 handler.onSuccess(id);

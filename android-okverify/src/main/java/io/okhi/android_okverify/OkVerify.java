@@ -151,7 +151,7 @@ public class OkVerify extends OkHiCore {
     }
 
     private void start(final Context context, OkVerifyGeofence geofence, OkHiLocation location, final OkVerifyCallback<String> handler) {
-        geofence.start(context, location.getId(), location.getLat(), location.getLon(), new OkVerifyAsyncTaskHandler<String>() {
+        geofence.start(context, withForeground, location.getId(), location.getLat(), location.getLon(), new OkVerifyAsyncTaskHandler<String>() {
             @Override
             public void onSuccess(String result) {
                 if (withForeground) {
